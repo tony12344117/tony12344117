@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>오늘 점심 뭐 먹지? 🍽️ 점심메뉴 룰렛</title>
+<style>
+  :root {
+    --bg1: #1a1c2e;
+    --bg2: #2a1e3f;
+    --accent: #ff6b6b;
+    --accent2: #ffd93d;
+    --card: #ffffff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+    background: radial-gradient(circle at 20% 20%, #3a2a5f 0%, var(--bg1) 60%, #0e0f1a 100%);
+    color: #fff;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 24px 16px 48px;
+    overflow-x: hidden;
+  }
+  h1 {
+    font-size: clamp(26px, 5vw, 42px);
+    text-align: center;
+    margin-top: 10px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+  }
+  .subtitle {
+    margin-top: 8px;
+    color: #c9c6e0;
+    font-size: 15px;
+    text-align: center;
+  }
+
+  /* 룰렛 창 */
+  .reel-window {
+    position: relative;
+    width: min(960px, 100%);
+    height: 240px;
+    margin-top: 28px;
+    overflow: hidden;
+    border-radius: 22px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), inset 0 0 40px rgba(0,0,0,0.4);
+  }
+  /* 양옆 페이드 */
+  .reel-window::before,
+  .reel-window::after {
+    content: "";
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 120px;
+    z-index: 3;
+    pointer-events: none;
+  }
+  .reel-window::before { left: 0; background: linear-gradient(90deg, rgba(14,15,26,0.95), transparent); }
+  .reel-window::after { right: 0; background: linear-gradient(270deg, rgba(14,15,26,0.95), transparent); }
+
+  /* 중앙 표시기 */
+  .marker {
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    z-index: 2;
+    border-left: 3px dashed rgba(255,217,61,0.8);
+    border-right: 3px dashed rgba(255,217,61,0.8);
+    pointer-events: none;
+  }
+  .marker .pin {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 24px;
+  }
+  .marker .pin.top { top: -2px; }
+  .marker .pin.bottom { bottom: -2px; transform: translateX(-50%) rotate(180deg); }
+
+  .strip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    will-change: transform;
+  }
+  .item {
+    width: 180px;
+    height: 200px;
+    margin: 0 10px;
+    border-radius: 18px;
+    background: var(--card);
+    color: #222;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+    gap: 10px;
+    transition: transform 0.2s;
+  }
+  .item .emoji { font-size: 72px; line-height: 1; }
+  .item .name {
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+    padding: 0 8px;
+    word-break: keep-all;
+  }
+  .item.win { outline: 4px solid var(--accent2); }
+
+  /* 버튼 */
+  .controls { margin-top: 30px; display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+  button {
+    font-family: inherit;
+    font-size: 20px;
+    font-weight: 800;
+    color: #1a1c2e;
+    background: linear-gradient(90deg, var(--accent2), #ffb347);
+    border: none;
+    padding: 16px 40px;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(255,179,71,0.4);
+    transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.2s;
+  }
+  button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(255,179,71,0.55); }
+  button:active:not(:disabled) { transform: translateY(1px); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  button.secondary {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    box-shadow: none;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+
+  /* 결과 */
+  .result {
+    margin-top: 28px;
+    text-align: center;
+    min-height: 120px;
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  .result.show { opacity: 1; transform: translateY(0) scale(1); }
+  .result .label { font-size: 16px; color: #ffd93d; letter-spacing: 2px; }
+  .result .big-emoji { font-size: 90px; margin: 6px 0; }
+  .result .big-name {
+    font-size: clamp(28px, 6vw, 48px);
+    font-weight: 900;
+    background: linear-gradient(90deg, #fff, #ffd93d);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .count { margin-top: 18px; color: #8a87a8; font-size: 13px; }
+  .footer { margin-top: 26px; color: #6f6c8a; font-size: 12px; text-align: center; }
+
+  @media (max-width: 520px) {
+    .reel-window { height: 200px; }
+    .item { width: 140px; height: 160px; margin: 0 7px; }
+    .item .emoji { font-size: 56px; }
+    .item .name { font-size: 15px; }
+    .marker { width: 154px; }
+  }
+</style>
+</head>
+<body>
+  <h1>오늘 점심 뭐 먹지? 🍽️</h1>
+  <p class="subtitle">시작 버튼을 누르면 룰렛이 돌아가며 메뉴를 추천해드려요!</p>
+
+  <div class="reel-window">
+    <div class="marker">
+      <span class="pin top">🔻</span>
+      <span class="pin bottom">🔻</span>
+    </div>
+    <div class="strip" id="strip"></div>
+  </div>
+
+  <div class="controls">
+    <button id="spinBtn">🎰 시작!</button>
+    <button id="againBtn" class="secondary" style="display:none;">🔄 다시 돌리기</button>
+  </div>
+
+  <div class="result" id="result">
+    <div class="label">오늘의 추천 점심</div>
+    <div class="big-emoji" id="resEmoji"></div>
+    <div class="big-name" id="resName"></div>
+  </div>
+
+  <div class="count" id="count"></div>
+  <div class="footer">메뉴 데이터 기반 랜덤 추천 · 클릭 한 번으로 실행되는 웹앱</div>
+
+<script>
+/* ===== 메뉴 데이터 (500가지) ===== */
+const MENUS = [
+"김치찌개","된장찌개","순두부찌개","부대찌개","청국장","육개장","설렁탕","곰탕","갈비탕","삼계탕",
+"감자탕","뼈해장국","콩나물국밥","순대국","돼지국밥","소고기무국","미역국 정식","북엇국","황태해장국","동태탕",
+"알탕","대구탕","매운탕","추어탕","닭개장","제육볶음","불고기","돼지불백","오삼불고기","닭갈비",
+"낙지볶음","쭈꾸미볶음","오징어볶음","오징어덮밥","김치볶음","두루치기","고추장불고기","간장불고기","갈비찜 정식","찜닭",
+"보쌈정식","족발정식","수육국밥","생선구이 정식","고등어구이","갈치구이","삼치구이","임연수구이","조기구이","코다리조림",
+"비빔밥","돌솥비빔밥","전주비빔밥","산채비빔밥","회덮밥","알밥","새싹비빔밥","콩나물비빔밥","참치덮밥","연어덮밥",
+"김치볶음밥","새우볶음밥","계란볶음밥","햄볶음밥","불고기볶음밥","카레라이스","하이라이스","오므라이스","제육덮밥","소불고기덮밥",
+"낙지덮밥","오징어덮밥","장어덮밥","치킨마요덮밥","스팸마요덮밥","돈가스덮밥","참치마요덮밥","규동","가츠동","오야코동",
+"잔치국수","비빔국수","열무국수","김치말이국수","칼국수","바지락칼국수","들깨칼국수","수제비","감자수제비","우동",
+"냄비우동","냉우동","메밀국수","냉모밀","판모밀","막국수","물냉면","비빔냉면","함흥냉면","평양냉면",
+"짜장면","간짜장","삼선짜장","유니짜장","짬뽕","삼선짬뽕","백짬뽕","볶음짬뽕","볶음밥","새우볶음밥",
+"잡채밥","마파두부밥","유산슬밥","고추잡채밥","탕수육 정식","깐풍기 정식","라조기 정식","팔보채 덮밥","마라탕","마라샹궈",
+"탄탄면","우육면","중국식 냉면","홍콩식 덮밥","차오판","돈가스","치즈돈가스","고구마돈가스","생선가스","치킨가스",
+"카레돈가스","일본식 카레","함박스테이크","데미그라스 함박","치즈함박","스테이크 정식","찹스테이크","토마토파스타","크림파스타","로제파스타",
+"알리오올리오","봉골레파스타","까르보나라","미트소스파스타","해산물파스타","리조또","크림리조또","토마토리조또","버섯리조또","오븐스파게티",
+"햄버거","치즈버거","불고기버거","치킨버거","새우버거","베이컨버거","더블버거","수제버거","핫도그","칠리핫도그",
+"샌드위치","클럽샌드위치","에그샌드위치","참치샌드위치","햄치즈샌드위치","파니니","치킨랩","브리또","타코","케사디야",
+"쌀국수","소고기쌀국수","해산물쌀국수","분짜","반미","팟타이","팟씨유","똠얌국수","태국식 볶음밥","그린커리",
+"레드커리","인도커리","버터치킨커리","치킨티카마살라","난 세트","비리야니","카오팟","나시고렝","미고렝","사테 정식",
+"김밥","참치김밥","치즈김밥","소고기김밥","멸치김밥","돈가스김밥","떡볶이","국물떡볶이","로제떡볶이","라볶이",
+"순대","찰순대","튀김모둠","오뎅","김치우동","라면","치즈라면","해물라면","쫄면","비빔쫄면",
+"닭강정","후라이드치킨","양념치킨 정식","간장치킨 정식","숯불치킨덮밥","닭불고기","닭볶음탕 정식","닭곰탕","닭칼국수","닭국수",
+"치킨샐러드","시저샐러드","연어샐러드","리코타샐러드","그린샐러드","포케","연어포케","참치포케","닭가슴살포케","두부포케",
+"해물순두부","차돌순두부","굴순두부","버섯전골","소고기전골","곱창전골","만두전골","샤브샤브","소고기샤브샤브","해물샤브샤브",
+"밀푀유나베","어묵전골","부대전골","낙곱새","해물탕","꽃게탕","아구탕","복지리","홍합탕 정식","바지락탕 정식",
+"물회","회정식","광어회덮밥","연어회덮밥","참치회덮밥","장어정식","장어구이덮밥","고등어조림","갈치조림","코다리정식",
+"꽁치구이","임연수정식","삼치조림","생선까스정식","해물덮밥","새우덮밥","오징어숙회정식","낙지연포탕","해물칼국수","바지락국수",
+"만둣국","떡만둣국","떡국","비빔만두","군만두 정식","찐만두 정식","김치만두국","고기만두국","왕만두국","손만둣국",
+"메밀전병 정식","빈대떡 정식","김치전 정식","해물파전 정식","부추전 정식","녹두전 정식","전주콩나물국밥","황태국밥","소머리국밥","선지해장국",
+"돼지김치찜","묵은지찜","갈비찜덮밥","소불고기정식","떡갈비정식","언양식불고기","숯불제육정식","주꾸미정식","오리불고기","훈제오리정식",
+"오리탕","오리주물럭","훈제오리샐러드","차돌박이정식","소고기국밥","육회비빔밥","차돌된장찌개","차돌순두부찌개","해물된장찌개","우렁된장찌개",
+"강된장비빔밥","열무비빔밥","참치비빔밥","불고기비빔밥","버섯비빔밥","꼬막비빔밥","멍게비빔밥","날치알비빔밥","김치덮밥","스팸김치덮밥",
+"소시지볶음정식","햄김치볶음","오징어제육볶음","버섯불고기","닭불고기덮밥","치킨카레","새우카레","돈가스카레","야채카레","버섯카레",
+"치킨리조또","새우리조또","해산물리조또","버섯크림파스타","새우로제파스타","치킨크림파스타","해산물토마토파스타","베이컨파스타","명란파스타","명란크림우동",
+"탄탄멘","일본식 라멘","돈코츠라멘","쇼유라멘","미소라멘","카레우동","냉소바","자루소바","텐동","새우텐동",
+"에비동","사케동","카츠카레","야키니쿠동","규카츠정식","일본식 함박","오코노미야키 정식","야키소바","타코야키 정식","가라아게 덮밥",
+"멕시칸볼","치킨브리또볼","스테이크볼","곡물샐러드볼","퀴노아샐러드","렌틸샐러드","병아리콩샐러드","두부샐러드","아보카도샐러드","닭가슴살도시락",
+"소불고기도시락","제육도시락","치킨도시락","생선도시락","한식뷔페","구내식당 백반","백반정식","가정식백반","기사식당 백반","한정식 점심특선",
+"해물볶음밥","김치날치알볶음밥","불닭볶음밥","차돌볶음밥","베이컨볶음밥","갈릭볶음밥","새우필라프","치킨필라프","버섯필라프","해산물필라프",
+"크림수프 세트","브로콜리스프 세트","양송이스프 세트","토마토수프 세트","클램차우더 세트","치킨누들수프 세트","미네스트로네 세트","베이글샌드위치","크루아상샌드위치","바게트샌드위치",
+"참치주먹밥","소고기주먹밥","김치주먹밥","스팸주먹밥","삼각김밥 세트","도시락정식","컵밥","제육컵밥","불고기컵밥","치킨마요컵밥",
+"고추장삼겹덮밥","차슈덮밥","목살스테이크덮밥","숯불고기덮밥","갈릭치킨덮밥","새우튀김덮밥","버섯덮밥","야채덮밥","두부덮밥","계란덮밥",
+"닭가슴살카레","연어스테이크","닭다리살구이","치킨플레이트","소고기플레이트","그릴드새우플레이트","로스트치킨플레이트","베이크드포테이토 세트","치킨랩 세트","터키샌드위치",
+"베트남식 비빔국수","태국식 볶음국수","싱가포르누들","인도식 커리라이스","네팔식 달밧","터키식 케밥 플레이트","치킨케밥","비프케밥","팔라펠 플레이트","후무스 플레이트",
+"꼬막정식","게장정식","간장게장정식","양념게장정식","굴국밥","굴떡국","굴순두부","홍합국밥","새우장덮밥","간장새우덮밥",
+"명란덮밥","우삼겹덮밥","스테이크덮밥","버터장조림덮밥","장조림덮밥","참치김치찌개","햄김치찌개","차돌김치찌개","해물김치찌개","참치순두부찌개",
+"우동정식","메밀정식","돈가스정식","생선정식","불고기정식","제육정식","순두부정식","냉면정식","국밥정식","샤브샤브정식",
+"버섯샤브정식","해물샤브정식","소고기전골정식","만두전골정식","닭한마리","해물찜 정식","아구찜 정식","코다리찜 정식","낙지볶음정식","오징어볶음정식",
+"치킨텐더샐러드","리코타치즈샐러드","시푸드샐러드","연어아보카도볼","곡물포케볼","닭가슴살포케볼","참치포케볼","소고기포케볼","두부포케볼","새우포케볼",
+"건강식 도시락","저염식 도시락","단백질 도시락","한식 도시락","일식 도시락","중식 도시락","양식 도시락","샐러드 도시락","특선 백반","오늘의 점심 특선 🍽️"
+];
+
+/* ===== 메뉴명 → 어울리는 음식 이모지 매칭 =====
+   키워드를 위에서부터 검사해 가장 먼저 맞는 이모지를 사용 */
+const EMOJI_RULES = [
+  ["스시|초밥|회|광어|연어회|참치회|사케동", "🍣"],
+  ["라멘|라면|쌀국수|우동|소바|국수|칼국수|짬뽕|짜장|탄탄|우육|미고렝|싱가포르누들|팟타이|팟씨유|똠얌", "🍜"],
+  ["스파게티|파스타|알리오|봉골레|까르보나라|로제|미트소스", "🍝"],
+  ["피자", "🍕"],
+  ["햄버거|버거", "🍔"],
+  ["핫도그", "🌭"],
+  ["타코|케사디야|브리또|멕시칸|팔라펠|후무스|나시고렝|케밥", "🌮"],
+  ["샌드위치|파니니|베이글|크루아상|바게트|클럽|에그샌드|햄치즈|터키샌드|랩", "🥪"],
+  ["샐러드|포케|퀴노아|렌틸|병아리콩|아보카도|곡물|새싹", "🥗"],
+  ["치킨|닭강정|후라이드|양념치킨|간장치킨|가라아게|치킨가스|치킨플레이트|로스트치킨|치킨텐더|닭다리|닭불고기|숯불치킨", "🍗"],
+  ["커리|카레|마살라|달밧|비리야니|커리라이스|카오팟", "🍛"],
+  ["돈가스|가츠|돈까스|규카츠|생선가스|치즈돈|고구마돈|생선까스|텐동|에비|튀김|탕수육|깐풍기|라조기", "🍤"],
+  ["스테이크|함박|찹스테이크|플레이트|연어스테이크|목살스테이크", "🥩"],
+  ["불고기|제육|두루치기|불백|오삼|숯불|언양|차슈|우삼겹|삼겹|장조림", "🥓"],
+  ["삼계탕|닭곰탕|닭개장|백숙|닭한마리", "🍲"],
+  ["찌개|전골|샤브|나베|낙곱새|순두부|청국장|된장|마라탕|마라샹궈|부대|묵은지|김치찜|돼지김치찜", "🍲"],
+  ["탕|국밥|해장국|곰탕|설렁탕|육개장|국|매운탕|복지리|연포탕|아구|꽃게|해물탕|홍합|바지락탕", "🍲"],
+  ["비빔밥|돌솥|산채비빔|육회비빔|강된장|열무비빔", "🍚"],
+  ["볶음밥|필라프|차오판|볶음짬뽕", "🍛"],
+  ["덮밥|규동|오야코동|동$|컵밥|마요|야키니쿠동", "🍱"],
+  ["김밥|주먹밥|삼각김밥", "🍙"],
+  ["떡볶이|라볶이|쫄면", "🌶️"],
+  ["순대", "🥟"],
+  ["만두|만둣국|딤섬|군만두|찐만두|왕만두|손만두", "🥟"],
+  ["떡국|떡만둣국", "🍡"],
+  ["전$|빈대떡|파전|부추전|녹두전|김치전|전병|전 정식|오코노미야키|야키소바|타코야키", "🥞"],
+  ["조림|코다리|갈치조림|고등어조림|삼치조림", "🐟"],
+  ["구이|고등어|갈치|삼치|임연수|조기|꽁치|생선|장어", "🐟"],
+  ["새우|장어|오징어|낙지|쭈꾸미|주꾸미|문어|꼬막|멍게|게장|굴|홍합|해물|해산물|시푸드|물회|알탕|날치알|명란", "🦐"],
+  ["오리", "🦆"],
+  ["두부|마파두부", "🧊"],
+  ["수프|스프|차우더|미네스트로네", "🥣"],
+  ["오므라이스|오믈렛|계란|에그", "🍳"],
+  ["리조또", "🍚"],
+  ["케이크|디저트", "🍰"],
+  ["도시락|정식|백반|뷔페|한정식|세트|플레이트|볼$|특선", "🍱"]
+];
+
+function emojiFor(name) {
+  for (const [pat, emo] of EMOJI_RULES) {
+    if (new RegExp(pat).test(name)) return emo;
+  }
+  return "🍽️";
+}
+
+/* ===== DOM & 상태 ===== */
+const strip = document.getElementById("strip");
+const spinBtn = document.getElementById("spinBtn");
+const againBtn = document.getElementById("againBtn");
+const result = document.getElementById("result");
+const resEmoji = document.getElementById("resEmoji");
+const resName = document.getElementById("resName");
+const count = document.getElementById("count");
+
+count.textContent = `총 ${MENUS.length}가지 메뉴 중에서 추천합니다`;
+
+const ITEM_W = window.matchMedia("(max-width:520px)").matches ? 154 : 200; // 카드폭+좌우마진
+let spinning = false;
+
+function makeItem(name) {
+  const div = document.createElement("div");
+  div.className = "item";
+  div.innerHTML = `<div class="emoji">${emojiFor(name)}</div><div class="name">${name}</div>`;
+  return div;
+}
+
+function rand(n) { return Math.floor(Math.random() * n); }
+
+// 초기 미리보기 채우기
+function fillIdle() {
+  strip.style.transition = "none";
+  strip.style.transform = "translateX(0)";
+  strip.innerHTML = "";
+  for (let i = 0; i < 12; i++) {
+    strip.appendChild(makeItem(MENUS[rand(MENUS.length)]));
+  }
+}
+fillIdle();
+
+function spin() {
+  if (spinning) return;
+  spinning = true;
+  spinBtn.disabled = true;
+  againBtn.style.display = "none";
+  result.classList.remove("show");
+
+  // 당첨 메뉴 선택
+  const winIndex = rand(MENUS.length);
+  const winName = MENUS[winIndex];
+
+  // 긴 스트립 구성: 앞쪽에 당첨 카드, 뒤쪽에 랜덤 필러
+  // -> 스트립을 오른쪽으로 이동시키면 카드들이 왼쪽에서 오른쪽으로 흐르며 당첨이 중앙으로 들어옴
+  const WIN_AT = 8;            // 당첨 카드의 위치(앞에서 8번째)
+  const TOTAL = 60;            // 전체 카드 수
+  strip.innerHTML = "";
+  let winEl = null;
+  for (let i = 0; i < TOTAL; i++) {
+    let el;
+    if (i === WIN_AT) { el = makeItem(winName); winEl = el; }
+    else { el = makeItem(MENUS[rand(MENUS.length)]); }
+    strip.appendChild(el);
+  }
+
+  const windowW = strip.parentElement.clientWidth;
+  const center = windowW / 2;
+  // 당첨 카드 중앙 정렬을 위한 최종 translateX
+  const finalX = center - (WIN_AT * ITEM_W + ITEM_W / 2);
+  // 시작은 훨씬 왼쪽(더 음수)에서 -> 오른쪽으로 스윕
+  const sweep = (TOTAL - WIN_AT - 6) * ITEM_W; // 충분한 스윕 거리
+  const startX = finalX - sweep;
+
+  strip.style.transition = "none";
+  strip.style.transform = `translateX(${startX}px)`;
+  // 강제 리플로우
+  void strip.offsetWidth;
+
+  strip.style.transition = "transform 4.2s cubic-bezier(0.12, 0.62, 0.12, 1)";
+  strip.style.transform = `translateX(${finalX}px)`;
+
+  const onEnd = () => {
+    strip.removeEventListener("transitionend", onEnd);
+    if (winEl) winEl.classList.add("win");
+    resEmoji.textContent = emojiFor(winName);
+    resName.textContent = winName;
+    result.classList.add("show");
+    spinning = false;
+    spinBtn.disabled = false;
+    spinBtn.textContent = "🎰 다시!";
+    againBtn.style.display = "inline-block";
+  };
+  strip.addEventListener("transitionend", onEnd);
+}
+
+spinBtn.addEventListener("click", spin);
+againBtn.addEventListener("click", spin);
+</script>
+</body>
+</html>
