@@ -309,9 +309,26 @@ function fillIdle() {
 fillIdle();
 
 let spinning = false;
+let currentX = 0;
+
+// 실제 레이아웃을 측정해 당첨 카드를 정확히 창 중앙으로 보정
+// (htmlpreview 등 창 너비 측정이 어긋나는 환경에서도 카드가 가운데 남도록)
+function recenter(winEl) {
+  if (!winEl) return;
+  const win = strip.parentElement.getBoundingClientRect();
+  const r = winEl.getBoundingClientRect();
+  const delta = (win.left + win.width / 2) - (r.left + r.width / 2);
+  if (Math.abs(delta) > 1) {
+    currentX += delta;
+    strip.style.transform = `translateX(${currentX}px)`;
+  }
+}
 
 function finish(name, winEl) {
-  if (winEl) winEl.classList.add("win");
+  if (winEl) {
+    winEl.classList.add("win");
+    requestAnimationFrame(() => recenter(winEl));
+  }
   resEmoji.textContent = emojiFor(name);
   resName.textContent = name;
   result.classList.add("show");
@@ -349,6 +366,7 @@ function spin() {
     const finalX = center - (WIN_AT * ITEM_W + ITEM_W / 2); // 당첨 중앙 정렬
     const startX = finalX - TRAVEL * ITEM_W;                // 왼쪽에서 출발 → 오른쪽으로
 
+    currentX = startX;
     strip.style.transform = `translateX(${startX}px)`; // 첫 프레임부터 카드가 보이게
 
     const duration = 3400;
@@ -359,6 +377,7 @@ function spin() {
       let t = (now - t0) / duration;
       if (t > 1) t = 1;
       const x = startX + (finalX - startX) * easeOut(t);
+      currentX = x;
       strip.style.transform = `translateX(${x}px)`;
       if (t < 1) requestAnimationFrame(frame);
       else finish(winName, winEl);
