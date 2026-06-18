@@ -3,11 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>오늘 점심 뭐 먹지? 🍽️ 점심메뉴 룰렛</title>
+<title>오늘 점심 뭐 먹지? 🍽️</title>
 <style>
   :root {
     --bg1: #1a1c2e;
-    --bg2: #2a1e3f;
     --accent: #ff6b6b;
     --accent2: #ffd93d;
     --card: #ffffff;
@@ -22,7 +21,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
     padding: 24px 16px 48px;
     overflow-x: hidden;
   }
@@ -36,14 +34,8 @@
     -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
   }
-  .subtitle {
-    margin-top: 8px;
-    color: #c9c6e0;
-    font-size: 15px;
-    text-align: center;
-  }
+  .subtitle { margin-top: 8px; color: #c9c6e0; font-size: 15px; text-align: center; }
 
-  /* 룰렛 창 */
   .reel-window {
     position: relative;
     width: min(960px, 100%);
@@ -68,34 +60,25 @@
   .reel-window::before { left: 0; background: linear-gradient(90deg, rgba(14,15,26,0.95), transparent); }
   .reel-window::after { right: 0; background: linear-gradient(270deg, rgba(14,15,26,0.95), transparent); }
 
-  /* 중앙 표시기 */
-  .marker {
+  /* 중앙 강조(은은한 글로우) */
+  .center-glow {
     position: absolute;
-    top: 0; bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 0; bottom: 0; left: 50%;
     width: 200px;
-    z-index: 2;
-    border-left: 3px dashed rgba(255,217,61,0.8);
-    border-right: 3px dashed rgba(255,217,61,0.8);
+    transform: translateX(-50%);
+    z-index: 1;
+    border-radius: 18px;
+    box-shadow: inset 0 0 0 2px rgba(255,217,61,0.45), 0 0 40px rgba(255,217,61,0.25);
     pointer-events: none;
   }
-  .marker .pin {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 24px;
-  }
-  .marker .pin.top { top: -2px; }
-  .marker .pin.bottom { bottom: -2px; transform: translateX(-50%) rotate(180deg); }
 
   .strip {
     position: absolute;
-    top: 0;
-    left: 0;
+    top: 0; left: 0;
     height: 100%;
     display: flex;
     align-items: center;
+    z-index: 2;
     will-change: transform;
   }
   .item {
@@ -112,19 +95,10 @@
     flex: 0 0 auto;
     box-shadow: 0 8px 20px rgba(0,0,0,0.35);
     gap: 10px;
-    transition: transform 0.2s;
   }
   .item .emoji { font-size: 72px; line-height: 1; }
-  .item .name {
-    font-size: 18px;
-    font-weight: 700;
-    text-align: center;
-    padding: 0 8px;
-    word-break: keep-all;
-  }
-  .item.win { outline: 4px solid var(--accent2); }
+  .item .name { font-size: 18px; font-weight: 700; text-align: center; padding: 0 8px; word-break: keep-all; }
 
-  /* 버튼 */
   .controls { margin-top: 30px; display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
   button {
     font-family: inherit;
@@ -142,14 +116,7 @@
   button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(255,179,71,0.55); }
   button:active:not(:disabled) { transform: translateY(1px); }
   button:disabled { opacity: 0.5; cursor: not-allowed; }
-  button.secondary {
-    background: rgba(255,255,255,0.12);
-    color: #fff;
-    box-shadow: none;
-    border: 1px solid rgba(255,255,255,0.2);
-  }
 
-  /* 결과 */
   .result {
     margin-top: 28px;
     text-align: center;
@@ -177,25 +144,21 @@
     .item { width: 140px; height: 160px; margin: 0 7px; }
     .item .emoji { font-size: 56px; }
     .item .name { font-size: 15px; }
-    .marker { width: 154px; }
+    .center-glow { width: 154px; }
   }
 </style>
 </head>
 <body>
   <h1>오늘 점심 뭐 먹지? 🍽️</h1>
-  <p class="subtitle">시작 버튼을 누르면 룰렛이 돌아가며 메뉴를 추천해드려요!</p>
+  <p class="subtitle">시작을 누르면 메뉴가 왼쪽에서 오른쪽으로 흐르다 멈춰요!</p>
 
   <div class="reel-window">
-    <div class="marker">
-      <span class="pin top">🔻</span>
-      <span class="pin bottom">🔻</span>
-    </div>
+    <div class="center-glow"></div>
     <div class="strip" id="strip"></div>
   </div>
 
   <div class="controls">
-    <button id="spinBtn">🎰 시작!</button>
-    <button id="againBtn" class="secondary" style="display:none;">🔄 다시 돌리기</button>
+    <button id="spinBtn">🍱 시작!</button>
   </div>
 
   <div class="result" id="result">
@@ -262,26 +225,24 @@ const MENUS = [
 "건강식 도시락","저염식 도시락","단백질 도시락","한식 도시락","일식 도시락","중식 도시락","양식 도시락","샐러드 도시락","특선 백반","오늘의 점심 특선 🍽️"
 ];
 
-/* ===== 메뉴명 → 어울리는 음식 이모지 매칭 =====
-   키워드를 위에서부터 검사해 가장 먼저 맞는 이모지를 사용 */
+/* ===== 메뉴명 → 어울리는 음식 이모지 ===== */
 const EMOJI_RULES = [
-  ["스시|초밥|회|광어|연어회|참치회|사케동", "🍣"],
+  ["스시|초밥|회덮|광어회|연어회|참치회|사케동|회정식|물회", "🍣"],
   ["라멘|라면|쌀국수|우동|소바|국수|칼국수|짬뽕|짜장|탄탄|우육|미고렝|싱가포르누들|팟타이|팟씨유|똠얌", "🍜"],
   ["스파게티|파스타|알리오|봉골레|까르보나라|로제|미트소스", "🍝"],
-  ["피자", "🍕"],
   ["햄버거|버거", "🍔"],
   ["핫도그", "🌭"],
   ["타코|케사디야|브리또|멕시칸|팔라펠|후무스|나시고렝|케밥", "🌮"],
   ["샌드위치|파니니|베이글|크루아상|바게트|클럽|에그샌드|햄치즈|터키샌드|랩", "🥪"],
   ["샐러드|포케|퀴노아|렌틸|병아리콩|아보카도|곡물|새싹", "🥗"],
   ["치킨|닭강정|후라이드|양념치킨|간장치킨|가라아게|치킨가스|치킨플레이트|로스트치킨|치킨텐더|닭다리|닭불고기|숯불치킨", "🍗"],
-  ["커리|카레|마살라|달밧|비리야니|커리라이스|카오팟", "🍛"],
-  ["돈가스|가츠|돈까스|규카츠|생선가스|치즈돈|고구마돈|생선까스|텐동|에비|튀김|탕수육|깐풍기|라조기", "🍤"],
+  ["커리|카레|마살라|달밧|비리야니|카오팟", "🍛"],
+  ["돈가스|가츠|규카츠|생선가스|치즈돈|고구마돈|생선까스|텐동|에비|튀김|탕수육|깐풍기|라조기", "🍤"],
   ["스테이크|함박|찹스테이크|플레이트|연어스테이크|목살스테이크", "🥩"],
   ["불고기|제육|두루치기|불백|오삼|숯불|언양|차슈|우삼겹|삼겹|장조림", "🥓"],
   ["삼계탕|닭곰탕|닭개장|백숙|닭한마리", "🍲"],
   ["찌개|전골|샤브|나베|낙곱새|순두부|청국장|된장|마라탕|마라샹궈|부대|묵은지|김치찜|돼지김치찜", "🍲"],
-  ["탕|국밥|해장국|곰탕|설렁탕|육개장|국|매운탕|복지리|연포탕|아구|꽃게|해물탕|홍합|바지락탕", "🍲"],
+  ["탕|국밥|해장국|곰탕|설렁탕|육개장|국$|매운탕|복지리|연포탕|아구|꽃게|해물탕|홍합|바지락탕", "🍲"],
   ["비빔밥|돌솥|산채비빔|육회비빔|강된장|열무비빔", "🍚"],
   ["볶음밥|필라프|차오판|볶음짬뽕", "🍛"],
   ["덮밥|규동|오야코동|동$|컵밥|마요|야키니쿠동", "🍱"],
@@ -293,16 +254,14 @@ const EMOJI_RULES = [
   ["전$|빈대떡|파전|부추전|녹두전|김치전|전병|전 정식|오코노미야키|야키소바|타코야키", "🥞"],
   ["조림|코다리|갈치조림|고등어조림|삼치조림", "🐟"],
   ["구이|고등어|갈치|삼치|임연수|조기|꽁치|생선|장어", "🐟"],
-  ["새우|장어|오징어|낙지|쭈꾸미|주꾸미|문어|꼬막|멍게|게장|굴|홍합|해물|해산물|시푸드|물회|알탕|날치알|명란", "🦐"],
+  ["새우|장어|오징어|낙지|쭈꾸미|주꾸미|문어|꼬막|멍게|게장|굴|홍합|해물|해산물|시푸드|알탕|날치알|명란", "🦐"],
   ["오리", "🦆"],
   ["두부|마파두부", "🧊"],
   ["수프|스프|차우더|미네스트로네", "🥣"],
   ["오므라이스|오믈렛|계란|에그", "🍳"],
   ["리조또", "🍚"],
-  ["케이크|디저트", "🍰"],
   ["도시락|정식|백반|뷔페|한정식|세트|플레이트|볼$|특선", "🍱"]
 ];
-
 function emojiFor(name) {
   for (const [pat, emo] of EMOJI_RULES) {
     if (new RegExp(pat).test(name)) return emo;
@@ -310,19 +269,16 @@ function emojiFor(name) {
   return "🍽️";
 }
 
-/* ===== DOM & 상태 ===== */
+/* ===== DOM ===== */
 const strip = document.getElementById("strip");
 const spinBtn = document.getElementById("spinBtn");
-const againBtn = document.getElementById("againBtn");
 const result = document.getElementById("result");
 const resEmoji = document.getElementById("resEmoji");
 const resName = document.getElementById("resName");
 const count = document.getElementById("count");
-
 count.textContent = `총 ${MENUS.length}가지 메뉴 중에서 추천합니다`;
 
-const ITEM_W = window.matchMedia("(max-width:520px)").matches ? 154 : 200; // 카드폭+좌우마진
-let spinning = false;
+function rand(n) { return Math.floor(Math.random() * n); }
 
 function makeItem(name) {
   const div = document.createElement("div");
@@ -331,75 +287,76 @@ function makeItem(name) {
   return div;
 }
 
-function rand(n) { return Math.floor(Math.random() * n); }
+// 카드 한 칸 폭(카드 + 좌우 마진) 측정
+function itemWidth() {
+  const probe = makeItem("측정");
+  probe.style.visibility = "hidden";
+  strip.appendChild(probe);
+  const w = probe.getBoundingClientRect().width;
+  const style = getComputedStyle(probe);
+  const m = parseFloat(style.marginLeft) + parseFloat(style.marginRight);
+  strip.removeChild(probe);
+  return w + m;
+}
 
-// 초기 미리보기 채우기
+// 초기 미리보기
 function fillIdle() {
-  strip.style.transition = "none";
-  strip.style.transform = "translateX(0)";
   strip.innerHTML = "";
-  for (let i = 0; i < 12; i++) {
-    strip.appendChild(makeItem(MENUS[rand(MENUS.length)]));
-  }
+  strip.style.transform = "translateX(0)";
+  for (let i = 0; i < 12; i++) strip.appendChild(makeItem(MENUS[rand(MENUS.length)]));
 }
 fillIdle();
+
+let spinning = false;
 
 function spin() {
   if (spinning) return;
   spinning = true;
   spinBtn.disabled = true;
-  againBtn.style.display = "none";
   result.classList.remove("show");
 
-  // 당첨 메뉴 선택
-  const winIndex = rand(MENUS.length);
-  const winName = MENUS[winIndex];
+  const winName = MENUS[rand(MENUS.length)];
+  const ITEM_W = itemWidth();
 
-  // 긴 스트립 구성: 앞쪽에 당첨 카드, 뒤쪽에 랜덤 필러
-  // -> 스트립을 오른쪽으로 이동시키면 카드들이 왼쪽에서 오른쪽으로 흐르며 당첨이 중앙으로 들어옴
-  const WIN_AT = 8;            // 당첨 카드의 위치(앞에서 8번째)
-  const TOTAL = 60;            // 전체 카드 수
+  // 스트립 구성: 당첨 카드를 충분히 뒤쪽에 두고 그 앞을 랜덤 필러로 채움
+  const TOTAL = 70;
+  const WIN_AT = TOTAL - 12; // 당첨 카드 위치
   strip.innerHTML = "";
-  let winEl = null;
   for (let i = 0; i < TOTAL; i++) {
-    let el;
-    if (i === WIN_AT) { el = makeItem(winName); winEl = el; }
-    else { el = makeItem(MENUS[rand(MENUS.length)]); }
-    strip.appendChild(el);
+    strip.appendChild(makeItem(i === WIN_AT ? winName : MENUS[rand(MENUS.length)]));
   }
 
   const windowW = strip.parentElement.clientWidth;
   const center = windowW / 2;
-  // 당첨 카드 중앙 정렬을 위한 최종 translateX
+  // 당첨 카드가 정확히 중앙에 오는 최종 위치
   const finalX = center - (WIN_AT * ITEM_W + ITEM_W / 2);
-  // 시작은 훨씬 왼쪽(더 음수)에서 -> 오른쪽으로 스윕
-  const sweep = (TOTAL - WIN_AT - 6) * ITEM_W; // 충분한 스윕 거리
-  const startX = finalX - sweep;
+  // 시작은 더 왼쪽(더 음수) → 오른쪽으로 이동(왼→오 흐름)
+  const startX = finalX - (TOTAL - WIN_AT + 4) * ITEM_W - windowW;
 
-  strip.style.transition = "none";
-  strip.style.transform = `translateX(${startX}px)`;
-  // 강제 리플로우
-  void strip.offsetWidth;
+  const duration = 3600; // ms
+  const t0 = performance.now();
+  const easeOut = t => 1 - Math.pow(1 - t, 3);
 
-  strip.style.transition = "transform 4.2s cubic-bezier(0.12, 0.62, 0.12, 1)";
-  strip.style.transform = `translateX(${finalX}px)`;
-
-  const onEnd = () => {
-    strip.removeEventListener("transitionend", onEnd);
-    if (winEl) winEl.classList.add("win");
-    resEmoji.textContent = emojiFor(winName);
-    resName.textContent = winName;
-    result.classList.add("show");
-    spinning = false;
-    spinBtn.disabled = false;
-    spinBtn.textContent = "🎰 다시!";
-    againBtn.style.display = "inline-block";
-  };
-  strip.addEventListener("transitionend", onEnd);
+  function frame(now) {
+    let t = (now - t0) / duration;
+    if (t > 1) t = 1;
+    const x = startX + (finalX - startX) * easeOut(t);
+    strip.style.transform = `translateX(${x}px)`;
+    if (t < 1) {
+      requestAnimationFrame(frame);
+    } else {
+      resEmoji.textContent = emojiFor(winName);
+      resName.textContent = winName;
+      result.classList.add("show");
+      spinning = false;
+      spinBtn.disabled = false;
+      spinBtn.textContent = "🔄 다시!";
+    }
+  }
+  requestAnimationFrame(frame);
 }
 
 spinBtn.addEventListener("click", spin);
-againBtn.addEventListener("click", spin);
 </script>
 </body>
 </html>
