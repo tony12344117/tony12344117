@@ -98,6 +98,7 @@
   }
   .item .emoji { font-size: 72px; line-height: 1; }
   .item .name { font-size: 18px; font-weight: 700; text-align: center; padding: 0 8px; word-break: keep-all; }
+  .item.win { outline: 4px solid var(--accent2); transform: scale(1.04); }
 
   .controls { margin-top: 30px; display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
   button {
@@ -158,7 +159,7 @@
   </div>
 
   <div class="controls">
-    <button id="spinBtn">🍱 시작!</button>
+    <button id="spinBtn" onclick="spin()">🍱 시작!</button>
   </div>
 
   <div class="result" id="result">
@@ -309,54 +310,68 @@ fillIdle();
 
 let spinning = false;
 
+function finish(name, winEl) {
+  if (winEl) winEl.classList.add("win");
+  resEmoji.textContent = emojiFor(name);
+  resName.textContent = name;
+  result.classList.add("show");
+  spinning = false;
+  spinBtn.disabled = false;
+  spinBtn.textContent = "🔄 다시!";
+}
+
 function spin() {
   if (spinning) return;
   spinning = true;
   spinBtn.disabled = true;
   result.classList.remove("show");
 
-  const winName = MENUS[rand(MENUS.length)];
-  const ITEM_W = itemWidth();
+  try {
+    const winName = MENUS[rand(MENUS.length)];
+    const ITEM_W = itemWidth();
+    const windowW = strip.parentElement.clientWidth || 960;
+    const center = windowW / 2;
 
-  // 스트립 구성: 당첨 카드를 충분히 뒤쪽에 두고 그 앞을 랜덤 필러로 채움
-  const TOTAL = 70;
-  const WIN_AT = TOTAL - 12; // 당첨 카드 위치
-  strip.innerHTML = "";
-  for (let i = 0; i < TOTAL; i++) {
-    strip.appendChild(makeItem(i === WIN_AT ? winName : MENUS[rand(MENUS.length)]));
-  }
+    // 당첨 카드는 "앞쪽"에 두고, 그 뒤(오른쪽)를 랜덤 카드로 길게 채운다.
+    // 벨트를 오른쪽으로 밀면 카드들이 왼→오로 흐르고, 마지막에 당첨이 중앙에 선다.
+    const WIN_AT = 6;
+    const TRAVEL = 36;                  // 벨트가 이동하는 칸 수(클수록 오래 흐름)
+    const TOTAL = WIN_AT + TRAVEL + 8;  // 화면이 비지 않도록 넉넉히
 
-  const windowW = strip.parentElement.clientWidth;
-  const center = windowW / 2;
-  // 당첨 카드가 정확히 중앙에 오는 최종 위치
-  const finalX = center - (WIN_AT * ITEM_W + ITEM_W / 2);
-  // 시작은 더 왼쪽(더 음수) → 오른쪽으로 이동(왼→오 흐름)
-  const startX = finalX - (TOTAL - WIN_AT + 4) * ITEM_W - windowW;
-
-  const duration = 3600; // ms
-  const t0 = performance.now();
-  const easeOut = t => 1 - Math.pow(1 - t, 3);
-
-  function frame(now) {
-    let t = (now - t0) / duration;
-    if (t > 1) t = 1;
-    const x = startX + (finalX - startX) * easeOut(t);
-    strip.style.transform = `translateX(${x}px)`;
-    if (t < 1) {
-      requestAnimationFrame(frame);
-    } else {
-      resEmoji.textContent = emojiFor(winName);
-      resName.textContent = winName;
-      result.classList.add("show");
-      spinning = false;
-      spinBtn.disabled = false;
-      spinBtn.textContent = "🔄 다시!";
+    strip.innerHTML = "";
+    let winEl = null;
+    for (let i = 0; i < TOTAL; i++) {
+      const el = makeItem(i === WIN_AT ? winName : MENUS[rand(MENUS.length)]);
+      if (i === WIN_AT) winEl = el;
+      strip.appendChild(el);
     }
+
+    const finalX = center - (WIN_AT * ITEM_W + ITEM_W / 2); // 당첨 중앙 정렬
+    const startX = finalX - TRAVEL * ITEM_W;                // 왼쪽에서 출발 → 오른쪽으로
+
+    strip.style.transform = `translateX(${startX}px)`; // 첫 프레임부터 카드가 보이게
+
+    const duration = 3400;
+    const t0 = performance.now();
+    const easeOut = t => 1 - Math.pow(1 - t, 3);
+
+    function frame(now) {
+      let t = (now - t0) / duration;
+      if (t > 1) t = 1;
+      const x = startX + (finalX - startX) * easeOut(t);
+      strip.style.transform = `translateX(${x}px)`;
+      if (t < 1) requestAnimationFrame(frame);
+      else finish(winName, winEl);
+    }
+    requestAnimationFrame(frame);
+  } catch (e) {
+    // 무슨 일이 있어도 추천 결과는 보여준다
+    finish(MENUS[rand(MENUS.length)], null);
   }
-  requestAnimationFrame(frame);
 }
 
 spinBtn.addEventListener("click", spin);
+window.spin = spin; // onclick 폴백용
 </script>
 </body>
 </html>
