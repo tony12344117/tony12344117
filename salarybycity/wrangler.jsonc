@@ -1,0 +1,11 @@
+// Cloudflare Workers (Static Assets) deployment config.
+// The site is fully static: `astro build` emits ./dist and the Worker
+// serves it as static assets — no server-side code required.
+{
+  "name": "salarybycity",
+  "compatibility_date": "2026-06-01",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page"
+  }
+}

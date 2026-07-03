@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { DATA_YEAR, occupations, salaryPath, states } from '../../lib/salary';
+
+const sorted = [...states].sort((a, b) => a.name.localeCompare(b.name));
+---
+
+<BaseLayout
+  title={`Salaries by State (${DATA_YEAR}): Browse All States`}
+  description={`Compare ${DATA_YEAR} salaries across U.S. states — how pay, cost of living, and state taxes change what each occupation actually earns, state by state.`}
+>
+  <section class="py-10">
+    <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">Salaries by state</h1>
+    <p class="mt-3 max-w-2xl text-stone-600 dark:text-stone-300">
+      The same job can pay 40% differently depending on the state — and taxes and living costs change
+      what that pay is worth. Pick a state, then an occupation.
+    </p>
+  </section>
+
+  <div class="grid gap-4 sm:grid-cols-2">
+    {sorted.map((s) => (
+      <article class="rounded-xl border border-stone-200 bg-white p-5 dark:border-stone-800 dark:bg-stone-900">
+        <p class="text-xs font-semibold uppercase tracking-wide text-stone-400">{s.region}</p>
+        <h2 class="mt-1 text-lg font-bold">{s.name} <span class="text-sm font-medium text-stone-400">({s.abbrev})</span></h2>
+        <dl class="mt-2 flex gap-6 text-sm">
+          <div>
+            <dt class="text-stone-500 dark:text-stone-400">Cost of living</dt>
+            <dd class="font-semibold">{s.costOfLivingIndex} <span class="font-normal text-stone-400">(US=100)</span></dd>
+          </div>
+          <div>
+            <dt class="text-stone-500 dark:text-stone-400">State income tax</dt>
+            <dd class="font-semibold">{s.incomeTax.hasIncomeTax ? 'Yes' : 'None'}</dd>
+          </div>
+        </dl>
+        <div class="mt-4 flex flex-wrap gap-2">
+          {occupations.map((occ) => (
+            <a
+              href={salaryPath(occ.slug, s.slug)}
+              class="rounded-full border border-stone-200 px-3 py-1 text-xs font-medium text-blue-700 hover:border-blue-400 hover:bg-blue-50 dark:border-stone-700 dark:text-blue-400 dark:hover:bg-blue-950/40"
+            >
+              {occ.title}
+            </a>
+          ))}
+        </div>
+      </article>
+    ))}
+  </div>
+</BaseLayout>

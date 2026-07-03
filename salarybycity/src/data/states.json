@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "california",
+    "name": "California",
+    "abbrev": "CA",
+    "region": "West",
+    "population": 39030000,
+    "salaryFactor": 1.15,
+    "costOfLivingIndex": 134.5,
+    "incomeTax": {
+      "hasIncomeTax": true,
+      "summary": "Progressive state income tax from 1% to 13.3% — the highest top marginal rate in the country",
+      "note": "California's Employment Training Tax and SDI payroll deductions also come out of paychecks, and the 13.3% top bracket applies above $1 million."
+    },
+    "topCities": ["Los Angeles", "San Francisco", "San Jose", "San Diego", "Sacramento"],
+    "majorIndustries": ["technology", "entertainment", "healthcare", "agriculture", "aerospace"],
+    "neighbors": ["oregon", "nevada", "arizona"],
+    "laborNote": "California sets a high wage floor: the state minimum wage, strict overtime rules, and mandatory pay-range disclosure in job postings (SB 1162) all push published salaries upward.",
+    "occupationFactors": {
+      "software-engineer": 1.34,
+      "registered-nurse": 1.42,
+      "electrician": 1.24,
+      "accountant": 1.12,
+      "high-school-teacher": 1.31,
+      "police-officer": 1.41,
+      "truck-driver": 1.1,
+      "dental-hygienist": 1.35,
+      "marketing-manager": 1.16,
+      "plumber": 1.16
+    }
+  },
+  {
+    "slug": "texas",
+    "name": "Texas",
+    "abbrev": "TX",
+    "region": "South",
+    "population": 30500000,
+    "salaryFactor": 0.97,
+    "costOfLivingIndex": 92.7,
+    "incomeTax": {
+      "hasIncomeTax": false,
+      "summary": "No state income tax — Texas is one of nine states with zero tax on wages",
+      "note": "Texas funds government largely through property and sales taxes, so homeowners face property tax rates among the highest in the nation (averaging around 1.6%)."
+    },
+    "topCities": ["Houston", "Dallas–Fort Worth", "Austin", "San Antonio", "El Paso"],
+    "majorIndustries": ["energy", "technology", "healthcare", "logistics", "manufacturing"],
+    "neighbors": ["new-mexico", "oklahoma", "arkansas", "louisiana"],
+    "laborNote": "Texas is a right-to-work state with no state minimum wage above the federal floor, so pay is driven almost entirely by market demand rather than mandates — which favors in-demand skilled roles.",
+    "occupationFactors": {
+      "software-engineer": 0.99,
+      "registered-nurse": 0.95,
+      "electrician": 0.94,
+      "accountant": 1.0,
+      "high-school-teacher": 0.95,
+      "police-officer": 0.91,
+      "truck-driver": 0.96,
+      "dental-hygienist": 0.94,
+      "marketing-manager": 0.94,
+      "plumber": 0.92
+    }
+  },
+  {
+    "slug": "florida",
+    "name": "Florida",
+    "abbrev": "FL",
+    "region": "South",
+    "population": 22600000,
+    "salaryFactor": 0.91,
+    "costOfLivingIndex": 100.7,
+    "incomeTax": {
+      "hasIncomeTax": false,
+      "summary": "No state income tax — wages are only subject to federal tax",
+      "note": "Florida's constitution prohibits a personal income tax, but fast-rising home insurance premiums and housing costs offset some of that advantage."
+    },
+    "topCities": ["Miami", "Orlando", "Tampa", "Jacksonville", "Fort Lauderdale"],
+    "majorIndustries": ["tourism", "healthcare", "aerospace", "finance", "construction"],
+    "neighbors": ["georgia", "alabama"],
+    "laborNote": "Florida's minimum wage is stepping up to $15 by constitutional amendment, compressing pay at the low end, while rapid population growth keeps demand high for healthcare and construction workers.",
+    "occupationFactors": {
+      "software-engineer": 0.89,
+      "registered-nurse": 0.88,
+      "electrician": 0.9,
+      "accountant": 0.92,
+      "high-school-teacher": 0.86,
+      "police-officer": 0.92,
+      "truck-driver": 0.93,
+      "dental-hygienist": 0.95,
+      "marketing-manager": 0.9,
+      "plumber": 0.91
+    }
+  },
+  {
+    "slug": "new-york",
+    "name": "New York",
+    "abbrev": "NY",
+    "region": "Northeast",
+    "population": 19570000,
+    "salaryFactor": 1.12,
+    "costOfLivingIndex": 123.1,
+    "incomeTax": {
+      "hasIncomeTax": true,
+      "summary": "Progressive state income tax from 4% to 10.9%, plus a separate New York City income tax of up to 3.876% for city residents",
+      "note": "Combined state and city taxes make NYC one of the highest-tax places to earn a paycheck in the U.S., though salaries upstate face only the state tax."
+    },
+    "topCities": ["New York City", "Buffalo", "Rochester", "Albany", "Syracuse"],
+    "majorIndustries": ["finance", "media", "healthcare", "technology", "education"],
+    "neighbors": ["new-jersey", "pennsylvania", "connecticut", "massachusetts", "vermont"],
+    "laborNote": "New York requires salary ranges in job postings statewide and has strong public-sector unions, which lifts published pay for teachers, police, and trades well above national schedules.",
+    "occupationFactors": {
+      "software-engineer": 1.16,
+      "registered-nurse": 1.11,
+      "electrician": 1.31,
+      "accountant": 1.16,
+      "high-school-teacher": 1.36,
+      "police-officer": 1.26,
+      "truck-driver": 1.09,
+      "dental-hygienist": 0.96,
+      "marketing-manager": 1.21,
+      "plumber": 1.26
+    }
+  },
+  {
+    "slug": "washington",
+    "name": "Washington",
+    "abbrev": "WA",
+    "region": "West",
+    "population": 7790000,
+    "salaryFactor": 1.1,
+    "costOfLivingIndex": 115.9,
+    "incomeTax": {
+      "hasIncomeTax": false,
+      "summary": "No state income tax on wages — though Washington levies a 7% capital gains tax above an inflation-indexed threshold",
+      "note": "Washington pairs zero wage tax with one of the highest state minimum wages in the country, and Seattle sets its own even higher city minimum."
+    },
+    "topCities": ["Seattle", "Spokane", "Tacoma", "Bellevue", "Vancouver"],
+    "majorIndustries": ["technology", "aerospace", "healthcare", "maritime trade", "agriculture"],
+    "neighbors": ["oregon", "idaho"],
+    "laborNote": "Washington's pay transparency law requires salary ranges in every job posting, and the concentration of tech headquarters around Seattle pulls average wages up across many occupations, not just software.",
+    "occupationFactors": {
+      "software-engineer": 1.27,
+      "registered-nurse": 1.16,
+      "electrician": 1.29,
+      "accountant": 1.05,
+      "high-school-teacher": 1.12,
+      "police-officer": 1.22,
+      "truck-driver": 1.11,
+      "dental-hygienist": 1.22,
+      "marketing-manager": 1.09,
+      "plumber": 1.24
+    }
+  }
+]

@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+/* Data-viz role tokens (light/dark selected per palette, not auto-flipped) */
+:root {
+  --viz-surface: #fcfcfb;
+  --viz-ink: #0b0b0b;
+  --viz-ink-secondary: #52514e;
+  --viz-muted: #898781;
+  --viz-grid: #e1e0d9;
+  --viz-baseline: #c3c2b7;
+  --viz-series: #2a78d6;
+  --viz-series-strong: #1c5cab;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --viz-surface: #1a1a19;
+    --viz-ink: #ffffff;
+    --viz-ink-secondary: #c3c2b7;
+    --viz-muted: #898781;
+    --viz-grid: #2c2c2a;
+    --viz-baseline: #383835;
+    --viz-series: #3987e5;
+    --viz-series-strong: #6da7ec;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}

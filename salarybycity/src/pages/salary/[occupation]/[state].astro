@@ -1,0 +1,130 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PercentileChart from '../../../components/PercentileChart.astro';
+import ComparisonTable from '../../../components/ComparisonTable.astro';
+import RelatedJobs from '../../../components/RelatedJobs.astro';
+import FaqSection from '../../../components/FaqSection.astro';
+import {
+  DATA_YEAR,
+  SOURCE_NOTE,
+  buildBreadcrumbJsonLd,
+  buildFaqJsonLd,
+  buildFaqs,
+  buildMetaDescription,
+  buildOccupationJsonLd,
+  buildPageTitle,
+  buildStateContent,
+  fmtUSD,
+  getSalary,
+  hourly,
+  occupations,
+  pctVsNational,
+  states,
+} from '../../../lib/salary';
+
+export function getStaticPaths() {
+  return occupations.flatMap((occupation) =>
+    states.map((state) => ({
+      params: { occupation: occupation.slug, state: state.slug },
+      props: { occupation, state },
+    })),
+  );
+}
+
+const { occupation, state } = Astro.props;
+
+const salary = getSalary(occupation, state);
+const sections = buildStateContent(occupation, state);
+const faqs = buildFaqs(occupation, state);
+const siteUrl = Astro.site!.toString().replace(/\/$/, '');
+const pageUrl = siteUrl + Astro.url.pathname;
+
+const jsonLd = [
+  buildOccupationJsonLd(occupation, state, pageUrl),
+  buildFaqJsonLd(faqs),
+  buildBreadcrumbJsonLd(occupation, state, siteUrl),
+];
+---
+
+<BaseLayout
+  title={buildPageTitle(occupation, state)}
+  description={buildMetaDescription(occupation, state)}
+  jsonLd={jsonLd}
+>
+  <nav class="pt-6 text-sm text-stone-500 dark:text-stone-400" aria-label="Breadcrumb">
+    <a href="/" class="hover:underline">Home</a>
+    <span class="mx-1">/</span>
+    <a href="/jobs/" class="hover:underline">Jobs</a>
+    <span class="mx-1">/</span>
+    <span>{occupation.title} in {state.name}</span>
+  </nav>
+
+  {/* 1. Hero */}
+  <section class="py-8">
+    <p class="text-sm font-semibold uppercase tracking-wide text-blue-700 dark:text-blue-400">
+      {state.name} · {DATA_YEAR} salary data
+    </p>
+    <h1 class="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
+      {occupation.title} Salary in {state.name} ({DATA_YEAR})
+    </h1>
+    <div class="mt-6 flex flex-wrap items-end gap-x-8 gap-y-4">
+      <div>
+        <p class="text-sm text-stone-500 dark:text-stone-400">Median annual salary</p>
+        <p class="text-5xl font-semibold tracking-tight sm:text-6xl">{fmtUSD(salary.median)}</p>
+      </div>
+      <dl class="flex gap-8 pb-1 text-sm">
+        <div>
+          <dt class="text-stone-500 dark:text-stone-400">Hourly</dt>
+          <dd class="font-semibold">{hourly(salary.median)}/hr</dd>
+        </div>
+        <div>
+          <dt class="text-stone-500 dark:text-stone-400">vs. national</dt>
+          <dd class="font-semibold">{pctVsNational(occupation, state)}</dd>
+        </div>
+        <div>
+          <dt class="text-stone-500 dark:text-stone-400">Typical education</dt>
+          <dd class="font-semibold">{occupation.education}</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  {/* 2. Percentile distribution chart */}
+  <section class="pb-10">
+    <h2 class="mb-4 text-2xl font-bold tracking-tight">Salary range in {state.name}</h2>
+    <PercentileChart salary={salary} occupationTitle={occupation.title} stateName={state.name} />
+    <p class="mt-3 text-sm text-stone-500 dark:text-stone-400">{SOURCE_NOTE}</p>
+  </section>
+
+  {/* 3. State-specific content */}
+  {sections.map((section) => (
+    <section class="pb-8">
+      <h2 class="mb-3 text-2xl font-bold tracking-tight">{section.heading}</h2>
+      {section.paragraphs.map((p) => (
+        <p class="leading-relaxed text-stone-700 dark:text-stone-300">{p}</p>
+      ))}
+    </section>
+  ))}
+
+  {/* 4. Nearby / other state comparison */}
+  <section class="pb-10">
+    <h2 class="mb-4 text-2xl font-bold tracking-tight">
+      How {state.name} compares: {occupation.title.toLowerCase()} pay by state
+    </h2>
+    <ComparisonTable occupation={occupation} state={state} />
+  </section>
+
+  {/* 5. Related jobs in the same state */}
+  <section class="pb-10">
+    <h2 class="mb-4 text-2xl font-bold tracking-tight">Related jobs in {state.name}</h2>
+    <RelatedJobs occupation={occupation} state={state} />
+  </section>
+
+  {/* 6. FAQ */}
+  <section class="pb-10">
+    <h2 class="mb-4 text-2xl font-bold tracking-tight">
+      {occupation.title} salary in {state.name}: FAQ
+    </h2>
+    <FaqSection faqs={faqs} />
+  </section>
+</BaseLayout>

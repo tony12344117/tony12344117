@@ -1,0 +1,76 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { DATA_YEAR, fmtUSD, getSalary, occupations, salaryPath, states } from '../lib/salary';
+
+// A rotating-feel (but deterministic) set of featured combinations.
+const featured = [
+  { occ: 'software-engineer', state: 'california' },
+  { occ: 'registered-nurse', state: 'texas' },
+  { occ: 'electrician', state: 'new-york' },
+  { occ: 'marketing-manager', state: 'washington' },
+  { occ: 'accountant', state: 'florida' },
+  { occ: 'dental-hygienist', state: 'california' },
+]
+  .map(({ occ, state }) => {
+    const o = occupations.find((x) => x.slug === occ);
+    const s = states.find((x) => x.slug === state);
+    return o && s ? { o, s, median: getSalary(o, s).median } : null;
+  })
+  .filter((x): x is NonNullable<typeof x> => x !== null);
+
+const totalPages = occupations.length * states.length;
+---
+
+<BaseLayout
+  title={`U.S. Salary Data by Job and State (${DATA_YEAR})`}
+  description={`Find ${DATA_YEAR} salary data for any job in any U.S. state — median pay, percentile ranges, cost-of-living adjusted value, taxes, and nearby-state comparisons, built on BLS statistics.`}
+>
+  <section class="py-14 text-center">
+    <h1 class="mx-auto max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl">
+      What does your job <span class="text-blue-700 dark:text-blue-400">really</span> pay in your state?
+    </h1>
+    <p class="mx-auto mt-4 max-w-xl text-lg text-stone-600 dark:text-stone-300">
+      {totalPages} occupation-and-state salary breakdowns built on official BLS statistics —
+      with cost of living, taxes, and percentile ranges, updated for {DATA_YEAR}.
+    </p>
+    <div class="mt-8 flex justify-center gap-4">
+      <a href="/jobs/" class="rounded-lg bg-blue-700 px-6 py-3 font-semibold text-white hover:bg-blue-800">
+        Browse by job
+      </a>
+      <a
+        href="/states/"
+        class="rounded-lg border border-stone-300 bg-white px-6 py-3 font-semibold text-stone-800 hover:border-stone-400 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100"
+      >
+        Browse by state
+      </a>
+    </div>
+  </section>
+
+  <section class="pb-14">
+    <h2 class="mb-5 text-2xl font-bold tracking-tight">Popular salary lookups</h2>
+    <ul class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {featured.map(({ o, s, median }) => (
+        <li>
+          <a
+            href={salaryPath(o.slug, s.slug)}
+            class="block rounded-xl border border-stone-200 bg-white p-4 transition-colors hover:border-blue-400 dark:border-stone-800 dark:bg-stone-900 dark:hover:border-blue-500"
+          >
+            <span class="font-semibold text-blue-700 dark:text-blue-400">{o.title}</span>
+            <span class="block text-sm text-stone-500 dark:text-stone-400">{s.name}</span>
+            <span class="mt-2 block text-xl font-semibold">{fmtUSD(median)}<span class="text-sm font-normal text-stone-400">/yr median</span></span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="rounded-2xl border border-stone-200 bg-white p-6 dark:border-stone-800 dark:bg-stone-900">
+    <h2 class="text-xl font-bold">Built on official data</h2>
+    <p class="mt-2 text-stone-600 dark:text-stone-300">
+      Every figure on SalaryByCity is modeled on the U.S. Bureau of Labor Statistics' Occupational
+      Employment and Wage Statistics (OEWS) program — the federal survey of wages across 800+
+      occupations — adjusted to {DATA_YEAR} and paired with state cost-of-living and tax context so
+      you can compare what pay is actually worth.
+    </p>
+  </section>
+</BaseLayout>

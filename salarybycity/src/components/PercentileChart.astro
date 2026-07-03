@@ -1,0 +1,95 @@
+---
+import type { Percentiles } from '../lib/salary';
+import { fmtCompact, fmtUSD, hourly } from '../lib/salary';
+
+interface Props {
+  salary: Percentiles;
+  occupationTitle: string;
+  stateName: string;
+}
+
+const { salary, occupationTitle, stateName } = Astro.props;
+
+const bars = [
+  { key: 'p10', label: '10th', value: salary.p10, note: 'Entry level — 10% earn less' },
+  { key: 'p25', label: '25th', value: salary.p25, note: 'Early career — 25% earn less' },
+  { key: 'median', label: 'Median', value: salary.median, note: 'Typical pay — half earn more, half less' },
+  { key: 'p75', label: '75th', value: salary.p75, note: 'Experienced — 75% earn less' },
+  { key: 'p90', label: '90th', value: salary.p90, note: 'Top earners — 90% earn less' },
+];
+
+const max = salary.p90 * 1.08;
+const pct = (v: number) => Math.round((v / max) * 1000) / 10;
+---
+
+<figure
+  class="viz-root rounded-xl border border-stone-200 p-5 dark:border-stone-800"
+  style="background: var(--viz-surface);"
+  aria-label={`Salary distribution for ${occupationTitle} in ${stateName}: annual pay by percentile`}
+>
+  <figcaption class="mb-4 text-sm font-medium" style="color: var(--viz-ink-secondary);">
+    Annual salary by percentile — {occupationTitle}, {stateName}
+  </figcaption>
+
+  <div class="flex items-end justify-between gap-2" style="height: 200px;" role="img" aria-hidden="true">
+    {bars.map((bar) => (
+      <div class="group relative flex h-full flex-1 flex-col items-center justify-end">
+        {/* hover tooltip */}
+        <div
+          class="pointer-events-none absolute bottom-full z-10 mb-1 hidden w-max max-w-44 -translate-x-0 rounded-md px-2.5 py-1.5 text-xs group-hover:block"
+          style="background: var(--viz-ink); color: var(--viz-surface);"
+        >
+          <span class="font-semibold">{fmtUSD(bar.value)}</span> · {hourly(bar.value)}/hr<br />
+          <span class="opacity-80">{bar.note}</span>
+        </div>
+        {/* value on the cap — text ink, never series color */}
+        <span
+          class:list={['mb-1 text-xs', bar.key === 'median' ? 'font-bold' : 'font-medium']}
+          style={`color: var(--viz-${bar.key === 'median' ? 'ink' : 'ink-secondary'});`}
+        >
+          {fmtCompact(bar.value)}
+        </span>
+        {/* column: ≤24px thick, 4px rounded data-end, square at baseline */}
+        <div
+          class="w-6 rounded-t"
+          style={`height: ${pct(bar.value)}%; background: var(--viz-series);${bar.key === 'median' ? ' background: var(--viz-series-strong);' : ''}`}
+        >
+        </div>
+      </div>
+    ))}
+  </div>
+
+  {/* hairline baseline + category labels */}
+  <div style="border-top: 1px solid var(--viz-baseline);" class="mt-0 flex justify-between gap-2 pt-1.5">
+    {bars.map((bar) => (
+      <span
+        class:list={['flex-1 text-center text-xs', bar.key === 'median' && 'font-semibold']}
+        style="color: var(--viz-muted);"
+      >
+        {bar.label}
+      </span>
+    ))}
+  </div>
+
+  <details class="mt-4 text-sm">
+    <summary class="cursor-pointer font-medium" style="color: var(--viz-ink-secondary);">View as table</summary>
+    <table class="mt-2 w-full text-left" style="color: var(--viz-ink-secondary); font-variant-numeric: tabular-nums;">
+      <thead>
+        <tr style="border-bottom: 1px solid var(--viz-grid);">
+          <th class="py-1.5 pr-4 font-medium">Percentile</th>
+          <th class="py-1.5 pr-4 font-medium">Annual</th>
+          <th class="py-1.5 font-medium">Hourly</th>
+        </tr>
+      </thead>
+      <tbody>
+        {bars.map((bar) => (
+          <tr style="border-bottom: 1px solid var(--viz-grid);">
+            <td class="py-1.5 pr-4">{bar.label}{bar.key !== 'median' ? ' percentile' : ''}</td>
+            <td class="py-1.5 pr-4">{fmtUSD(bar.value)}</td>
+            <td class="py-1.5">{hourly(bar.value)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </details>
+</figure>

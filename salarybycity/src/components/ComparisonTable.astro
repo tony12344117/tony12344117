@@ -1,0 +1,51 @@
+---
+import type { Occupation, StateInfo } from '../lib/salary';
+import { fmtUSD, getComparisonStates, getSalary, salaryPath } from '../lib/salary';
+
+interface Props {
+  occupation: Occupation;
+  state: StateInfo;
+}
+
+const { occupation, state } = Astro.props;
+const current = getSalary(occupation, state);
+const rows = getComparisonStates(occupation, state).map((s) => {
+  const median = getSalary(occupation, s).median;
+  const diff = median - current.median;
+  return { state: s, median, diff };
+});
+---
+
+<div class="overflow-x-auto rounded-xl border border-stone-200 dark:border-stone-800">
+  <table class="w-full text-left text-sm" style="font-variant-numeric: tabular-nums;">
+    <thead class="bg-stone-100 text-stone-600 dark:bg-stone-900 dark:text-stone-300">
+      <tr>
+        <th class="px-4 py-3 font-medium">State</th>
+        <th class="px-4 py-3 font-medium">Median salary</th>
+        <th class="px-4 py-3 font-medium">vs. {state.name}</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-stone-200 bg-white dark:divide-stone-800 dark:bg-stone-950">
+      <tr class="bg-blue-50/60 font-semibold dark:bg-blue-950/30">
+        <td class="px-4 py-3">{state.name} (this page)</td>
+        <td class="px-4 py-3">{fmtUSD(current.median)}</td>
+        <td class="px-4 py-3 text-stone-400">—</td>
+      </tr>
+      {rows.map(({ state: s, median, diff }) => (
+        <tr>
+          <td class="px-4 py-3">
+            <a href={salaryPath(occupation.slug, s.slug)} class="font-medium text-blue-700 hover:underline dark:text-blue-400">
+              {s.name}
+            </a>
+          </td>
+          <td class="px-4 py-3">{fmtUSD(median)}</td>
+          <td class="px-4 py-3">
+            <span class={diff >= 0 ? 'text-stone-700 dark:text-stone-200' : 'text-stone-500 dark:text-stone-400'}>
+              {diff >= 0 ? '+' : '−'}{fmtUSD(Math.abs(diff))}
+            </span>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>

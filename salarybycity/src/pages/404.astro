@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Page Not Found" description="The page you were looking for doesn't exist.">
+  <section class="py-24 text-center">
+    <h1 class="text-4xl font-bold tracking-tight">Page not found</h1>
+    <p class="mt-4 text-stone-600 dark:text-stone-300">
+      That salary page doesn't exist (yet). Try browsing by job or state instead.
+    </p>
+    <div class="mt-8 flex justify-center gap-4">
+      <a href="/jobs/" class="rounded-lg bg-blue-700 px-6 py-3 font-semibold text-white hover:bg-blue-800">Browse jobs</a>
+      <a href="/states/" class="rounded-lg border border-stone-300 px-6 py-3 font-semibold dark:border-stone-700">Browse states</a>
+    </div>
+  </section>
+</BaseLayout>
