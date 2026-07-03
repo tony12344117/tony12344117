@@ -1,0 +1,119 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import {
+  DATA_YEAR,
+  fmtUSD,
+  getSalary,
+  occupations,
+  pctVsNational,
+  salaryPath,
+  states,
+} from '../../lib/salary';
+
+export function getStaticPaths() {
+  return states.map((state) => ({
+    params: { state: state.slug },
+    props: { state },
+  }));
+}
+
+const { state } = Astro.props;
+
+const rows = occupations
+  .map((occ) => ({ occ, median: getSalary(occ, state).median }))
+  .sort((a, b) => b.median - a.median);
+
+const siteUrl = Astro.site!.toString().replace(/\/$/, '');
+const colDiff = Math.round(state.costOfLivingIndex - 100);
+
+const description = `What ${occupations.length} occupations pay in ${state.name} in ${DATA_YEAR} — from ${rows[rows.length - 1]!.occ.title.toLowerCase()}s (${fmtUSD(rows[rows.length - 1]!.median)}) to ${rows[0]!.occ.title.toLowerCase()}s (${fmtUSD(rows[0]!.median)}), with ${state.abbrev} cost-of-living and tax context.`;
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl + '/' },
+      { '@type': 'ListItem', position: 2, name: 'States', item: siteUrl + '/states/' },
+      { '@type': 'ListItem', position: 3, name: state.name, item: `${siteUrl}/states/${state.slug}/` },
+    ],
+  },
+];
+---
+
+<BaseLayout title={`Salaries in ${state.name} (${DATA_YEAR}): Pay by Occupation`} description={description} jsonLd={jsonLd}>
+  <nav class="pt-6 text-sm text-stone-500 dark:text-stone-400" aria-label="Breadcrumb">
+    <a href="/" class="hover:underline">Home</a>
+    <span class="mx-1">/</span>
+    <a href="/states/" class="hover:underline">States</a>
+    <span class="mx-1">/</span>
+    <span>{state.name}</span>
+  </nav>
+
+  <section class="py-8">
+    <p class="text-sm font-semibold uppercase tracking-wide text-blue-700 dark:text-blue-400">
+      {state.region} · {state.abbrev}
+    </p>
+    <h1 class="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
+      Salaries in {state.name} ({DATA_YEAR})
+    </h1>
+    <dl class="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div class="rounded-xl border border-stone-200 bg-white p-4 dark:border-stone-800 dark:bg-stone-900">
+        <dt class="text-sm text-stone-500 dark:text-stone-400">Cost of living</dt>
+        <dd class="mt-1 text-xl font-semibold">{state.costOfLivingIndex}</dd>
+        <dd class="text-xs text-stone-400">{Math.abs(colDiff)}% {colDiff >= 0 ? 'above' : 'below'} U.S. average</dd>
+      </div>
+      <div class="rounded-xl border border-stone-200 bg-white p-4 dark:border-stone-800 dark:bg-stone-900">
+        <dt class="text-sm text-stone-500 dark:text-stone-400">State income tax</dt>
+        <dd class="mt-1 text-xl font-semibold">{state.incomeTax.hasIncomeTax ? 'Yes' : 'None'}</dd>
+        <dd class="text-xs text-stone-400">on wages</dd>
+      </div>
+      <div class="rounded-xl border border-stone-200 bg-white p-4 dark:border-stone-800 dark:bg-stone-900">
+        <dt class="text-sm text-stone-500 dark:text-stone-400">Population</dt>
+        <dd class="mt-1 text-xl font-semibold">{(state.population / 1000000).toFixed(1)}M</dd>
+        <dd class="text-xs text-stone-400">residents</dd>
+      </div>
+      <div class="rounded-xl border border-stone-200 bg-white p-4 dark:border-stone-800 dark:bg-stone-900">
+        <dt class="text-sm text-stone-500 dark:text-stone-400">Largest metro</dt>
+        <dd class="mt-1 text-xl font-semibold">{state.topCities[0]}</dd>
+        <dd class="text-xs text-stone-400">top job market</dd>
+      </div>
+    </dl>
+    <p class="mt-6 max-w-3xl leading-relaxed text-stone-700 dark:text-stone-300">
+      {state.name}'s economy is anchored by {state.majorIndustries.slice(0, 3).join(', ')}, with
+      hiring concentrated in {state.topCities.slice(0, 3).join(', ')}. {state.incomeTax.summary}.
+      {state.laborNote} The table below shows the {DATA_YEAR} median salary for every occupation we
+      track in {state.name} — click through for full percentile ranges, cost-of-living analysis, and
+      comparisons with {state.neighbors.length ? 'neighboring states' : 'other states'}.
+    </p>
+  </section>
+
+  <section class="pb-10">
+    <h2 class="mb-4 text-2xl font-bold tracking-tight">Median salary by occupation in {state.name}</h2>
+    <div class="overflow-x-auto rounded-xl border border-stone-200 dark:border-stone-800">
+      <table class="w-full text-left text-sm" style="font-variant-numeric: tabular-nums;">
+        <thead class="bg-stone-100 text-stone-600 dark:bg-stone-900 dark:text-stone-300">
+          <tr>
+            <th class="px-4 py-3 font-medium">Occupation</th>
+            <th class="px-4 py-3 font-medium">Median salary</th>
+            <th class="px-4 py-3 font-medium">vs. national</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-stone-200 bg-white dark:divide-stone-800 dark:bg-stone-950">
+          {rows.map(({ occ, median }) => (
+            <tr>
+              <td class="px-4 py-2.5">
+                <a href={salaryPath(occ.slug, state.slug)} class="font-medium text-blue-700 hover:underline dark:text-blue-400">
+                  {occ.title}
+                </a>
+                <span class="ml-2 hidden text-xs text-stone-400 sm:inline">{occ.category}</span>
+              </td>
+              <td class="px-4 py-2.5">{fmtUSD(median)}</td>
+              <td class="px-4 py-2.5 text-stone-500 dark:text-stone-400">{pctVsNational(occ, state)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</BaseLayout>

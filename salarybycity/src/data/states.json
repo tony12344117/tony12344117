@@ -1,152 +1,471 @@
 [
   {
-    "slug": "california",
-    "name": "California",
-    "abbrev": "CA",
-    "region": "West",
-    "population": 39030000,
-    "salaryFactor": 1.15,
-    "costOfLivingIndex": 134.5,
-    "incomeTax": {
-      "hasIncomeTax": true,
-      "summary": "Progressive state income tax from 1% to 13.3% — the highest top marginal rate in the country",
-      "note": "California's Employment Training Tax and SDI payroll deductions also come out of paychecks, and the 13.3% top bracket applies above $1 million."
-    },
+    "slug": "alabama", "name": "Alabama", "abbrev": "AL", "fips": "01", "region": "South", "population": 5108000,
+    "salaryFactor": 0.89, "costOfLivingIndex": 88.1,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Graduated state income tax from 2% to 5%", "note": "Alabama is one of the few states that still taxes groceries, though the rate is being phased down, and property taxes are among the lowest in the nation." },
+    "topCities": ["Birmingham", "Huntsville", "Montgomery", "Mobile", "Tuscaloosa"],
+    "majorIndustries": ["aerospace", "automotive manufacturing", "healthcare", "steel", "agriculture"],
+    "neighbors": ["florida", "georgia", "tennessee", "mississippi"],
+    "laborNote": "Alabama is a right-to-work state with no state minimum wage above the federal floor, but the Huntsville aerospace and defense cluster pays well above statewide norms."
+  },
+  {
+    "slug": "alaska", "name": "Alaska", "abbrev": "AK", "fips": "02", "region": "West", "population": 733000,
+    "salaryFactor": 1.05, "costOfLivingIndex": 125.2,
+    "incomeTax": { "hasIncomeTax": false, "summary": "No state income tax — and the Permanent Fund pays residents an annual dividend", "note": "High shipping and housing costs offset much of the tax advantage, which is why many Alaska employers pay explicit cost-of-living premiums." },
+    "topCities": ["Anchorage", "Fairbanks", "Juneau", "Wasilla", "Sitka"],
+    "majorIndustries": ["oil and gas", "fishing", "tourism", "military", "mining"],
+    "neighbors": ["washington", "oregon", "california"],
+    "laborNote": "Remote-site premiums, rotation schedules, and cost-of-living adjustments are standard in Alaska pay packages, especially on the North Slope and in fisheries."
+  },
+  {
+    "slug": "arizona", "name": "Arizona", "abbrev": "AZ", "fips": "04", "region": "West", "population": 7431000,
+    "salaryFactor": 0.99, "costOfLivingIndex": 108.4,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Flat 2.5% state income tax — the lowest flat rate in the country", "note": "Arizona's minimum wage is indexed to inflation and sits well above the federal floor, compressing pay bands at the entry level." },
+    "topCities": ["Phoenix", "Tucson", "Mesa", "Chandler", "Scottsdale"],
+    "majorIndustries": ["semiconductors", "aerospace", "healthcare", "tourism", "construction"],
+    "neighbors": ["california", "nevada", "utah", "colorado", "new-mexico"],
+    "laborNote": "The TSMC and Intel semiconductor build-out around Phoenix has pulled construction trades and engineering pay sharply upward since 2022.",
+    "categoryFactors": { "Technology": 1.03 }
+  },
+  {
+    "slug": "arkansas", "name": "Arkansas", "abbrev": "AR", "fips": "05", "region": "South", "population": 3068000,
+    "salaryFactor": 0.86, "costOfLivingIndex": 89.0,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Graduated state income tax topping out at 3.9% after repeated cuts", "note": "Arkansas has cut its top income tax rate several times since 2021, and living costs remain among the lowest in the country." },
+    "topCities": ["Little Rock", "Fayetteville", "Fort Smith", "Springdale", "Jonesboro"],
+    "majorIndustries": ["retail", "food processing", "logistics", "agriculture", "steel"],
+    "neighbors": ["missouri", "tennessee", "mississippi", "louisiana", "texas", "oklahoma"],
+    "laborNote": "Walmart's Bentonville headquarters and Tyson Foods give northwest Arkansas a white-collar pay market that runs well above the rest of the state."
+  },
+  {
+    "slug": "california", "name": "California", "abbrev": "CA", "fips": "06", "region": "West", "population": 39030000,
+    "salaryFactor": 1.15, "costOfLivingIndex": 134.5,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Progressive state income tax from 1% to 13.3% — the highest top marginal rate in the country", "note": "California's Employment Training Tax and SDI payroll deductions also come out of paychecks, and the 13.3% top bracket applies above $1 million." },
     "topCities": ["Los Angeles", "San Francisco", "San Jose", "San Diego", "Sacramento"],
     "majorIndustries": ["technology", "entertainment", "healthcare", "agriculture", "aerospace"],
     "neighbors": ["oregon", "nevada", "arizona"],
     "laborNote": "California sets a high wage floor: the state minimum wage, strict overtime rules, and mandatory pay-range disclosure in job postings (SB 1162) all push published salaries upward.",
-    "occupationFactors": {
-      "software-engineer": 1.34,
-      "registered-nurse": 1.42,
-      "electrician": 1.24,
-      "accountant": 1.12,
-      "high-school-teacher": 1.31,
-      "police-officer": 1.41,
-      "truck-driver": 1.1,
-      "dental-hygienist": 1.35,
-      "marketing-manager": 1.16,
-      "plumber": 1.16
-    }
+    "categoryFactors": { "Technology": 1.08, "Creative & Service": 1.1, "Legal": 1.08 },
+    "occupationFactors": { "software-engineer": 1.34, "registered-nurse": 1.42, "electrician": 1.24, "accountant": 1.12, "high-school-teacher": 1.31, "police-officer": 1.41, "truck-driver": 1.1, "dental-hygienist": 1.35, "marketing-manager": 1.16, "plumber": 1.16 }
   },
   {
-    "slug": "texas",
-    "name": "Texas",
-    "abbrev": "TX",
-    "region": "South",
-    "population": 30500000,
-    "salaryFactor": 0.97,
-    "costOfLivingIndex": 92.7,
-    "incomeTax": {
-      "hasIncomeTax": false,
-      "summary": "No state income tax — Texas is one of nine states with zero tax on wages",
-      "note": "Texas funds government largely through property and sales taxes, so homeowners face property tax rates among the highest in the nation (averaging around 1.6%)."
-    },
-    "topCities": ["Houston", "Dallas–Fort Worth", "Austin", "San Antonio", "El Paso"],
-    "majorIndustries": ["energy", "technology", "healthcare", "logistics", "manufacturing"],
-    "neighbors": ["new-mexico", "oklahoma", "arkansas", "louisiana"],
-    "laborNote": "Texas is a right-to-work state with no state minimum wage above the federal floor, so pay is driven almost entirely by market demand rather than mandates — which favors in-demand skilled roles.",
-    "occupationFactors": {
-      "software-engineer": 0.99,
-      "registered-nurse": 0.95,
-      "electrician": 0.94,
-      "accountant": 1.0,
-      "high-school-teacher": 0.95,
-      "police-officer": 0.91,
-      "truck-driver": 0.96,
-      "dental-hygienist": 0.94,
-      "marketing-manager": 0.94,
-      "plumber": 0.92
-    }
+    "slug": "colorado", "name": "Colorado", "abbrev": "CO", "fips": "08", "region": "West", "population": 5878000,
+    "salaryFactor": 1.06, "costOfLivingIndex": 105.1,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Flat 4.4% state income tax", "note": "Colorado's TABOR amendment regularly triggers taxpayer refunds, and Denver adds a small local head tax on workers." },
+    "topCities": ["Denver", "Colorado Springs", "Aurora", "Fort Collins", "Boulder"],
+    "majorIndustries": ["aerospace", "technology", "energy", "tourism", "healthcare"],
+    "neighbors": ["wyoming", "nebraska", "kansas", "oklahoma", "new-mexico", "utah", "arizona"],
+    "laborNote": "Colorado pioneered pay transparency — its Equal Pay for Equal Work Act has required salary ranges in every job posting since 2021, keeping published pay honest.",
+    "categoryFactors": { "Technology": 1.05 }
   },
   {
-    "slug": "florida",
-    "name": "Florida",
-    "abbrev": "FL",
-    "region": "South",
-    "population": 22600000,
-    "salaryFactor": 0.91,
-    "costOfLivingIndex": 100.7,
-    "incomeTax": {
-      "hasIncomeTax": false,
-      "summary": "No state income tax — wages are only subject to federal tax",
-      "note": "Florida's constitution prohibits a personal income tax, but fast-rising home insurance premiums and housing costs offset some of that advantage."
-    },
+    "slug": "connecticut", "name": "Connecticut", "abbrev": "CT", "fips": "09", "region": "Northeast", "population": 3618000,
+    "salaryFactor": 1.08, "costOfLivingIndex": 112.8,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Progressive state income tax from 2% to 6.99%", "note": "Connecticut's highest earners cluster in Fairfield County's hedge-fund corridor, where finance pay dwarfs the state median." },
+    "topCities": ["Bridgeport", "New Haven", "Hartford", "Stamford", "Waterbury"],
+    "majorIndustries": ["finance", "insurance", "aerospace", "defense manufacturing", "healthcare"],
+    "neighbors": ["new-york", "massachusetts", "rhode-island"],
+    "laborNote": "Hartford's insurance headquarters and Electric Boat's submarine program anchor two very different but equally strong pay markets in a small state.",
+    "categoryFactors": { "Business & Finance": 1.08 }
+  },
+  {
+    "slug": "delaware", "name": "Delaware", "abbrev": "DE", "fips": "10", "region": "South", "population": 1031000,
+    "salaryFactor": 1.01, "costOfLivingIndex": 101.1,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Graduated state income tax from 2.2% to 6.6%", "note": "Delaware has no sales tax, and Wilmington levies a small city wage tax on people who work there." },
+    "topCities": ["Wilmington", "Dover", "Newark", "Middletown", "Smyrna"],
+    "majorIndustries": ["banking", "chemicals", "pharmaceuticals", "healthcare", "agriculture"],
+    "neighbors": ["maryland", "pennsylvania", "new-jersey"],
+    "laborNote": "Credit-card banking and corporate law give Wilmington outsized professional salaries for a state its size — most Fortune 500 companies are incorporated here."
+  },
+  {
+    "slug": "florida", "name": "Florida", "abbrev": "FL", "fips": "12", "region": "South", "population": 22600000,
+    "salaryFactor": 0.91, "costOfLivingIndex": 100.7,
+    "incomeTax": { "hasIncomeTax": false, "summary": "No state income tax — wages are only subject to federal tax", "note": "Florida's constitution prohibits a personal income tax, but fast-rising home insurance premiums and housing costs offset some of that advantage." },
     "topCities": ["Miami", "Orlando", "Tampa", "Jacksonville", "Fort Lauderdale"],
     "majorIndustries": ["tourism", "healthcare", "aerospace", "finance", "construction"],
     "neighbors": ["georgia", "alabama"],
     "laborNote": "Florida's minimum wage is stepping up to $15 by constitutional amendment, compressing pay at the low end, while rapid population growth keeps demand high for healthcare and construction workers.",
-    "occupationFactors": {
-      "software-engineer": 0.89,
-      "registered-nurse": 0.88,
-      "electrician": 0.9,
-      "accountant": 0.92,
-      "high-school-teacher": 0.86,
-      "police-officer": 0.92,
-      "truck-driver": 0.93,
-      "dental-hygienist": 0.95,
-      "marketing-manager": 0.9,
-      "plumber": 0.91
-    }
+    "occupationFactors": { "software-engineer": 0.89, "registered-nurse": 0.88, "electrician": 0.9, "accountant": 0.92, "high-school-teacher": 0.86, "police-officer": 0.92, "truck-driver": 0.93, "dental-hygienist": 0.95, "marketing-manager": 0.9, "plumber": 0.91 }
   },
   {
-    "slug": "new-york",
-    "name": "New York",
-    "abbrev": "NY",
-    "region": "Northeast",
-    "population": 19570000,
-    "salaryFactor": 1.12,
-    "costOfLivingIndex": 123.1,
-    "incomeTax": {
-      "hasIncomeTax": true,
-      "summary": "Progressive state income tax from 4% to 10.9%, plus a separate New York City income tax of up to 3.876% for city residents",
-      "note": "Combined state and city taxes make NYC one of the highest-tax places to earn a paycheck in the U.S., though salaries upstate face only the state tax."
-    },
+    "slug": "georgia", "name": "Georgia", "abbrev": "GA", "fips": "13", "region": "South", "population": 11029000,
+    "salaryFactor": 0.96, "costOfLivingIndex": 91.3,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Flat 5.39% state income tax, scheduled to keep falling", "note": "Georgia converted to a flat tax in 2024 and has legislated automatic rate cuts toward 4.99% as revenue targets are met." },
+    "topCities": ["Atlanta", "Savannah", "Augusta", "Columbus", "Athens"],
+    "majorIndustries": ["logistics", "film production", "fintech", "aerospace", "agriculture"],
+    "neighbors": ["florida", "alabama", "tennessee", "north-carolina", "south-carolina"],
+    "laborNote": "Atlanta's Fortune 500 headquarters density, the world's busiest airport, and America's biggest film-production tax credit each anchor distinct high-paying job markets."
+  },
+  {
+    "slug": "hawaii", "name": "Hawaii", "abbrev": "HI", "fips": "15", "region": "West", "population": 1435000,
+    "salaryFactor": 1.02, "costOfLivingIndex": 179.2,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Progressive state income tax from 1.4% to 11% — one of the highest top rates", "note": "Hawaii pairs high income taxes with the highest cost of living in the nation; 2024 reforms are gradually widening brackets to give relief." },
+    "topCities": ["Honolulu", "Pearl City", "Hilo", "Kailua", "Waipahu"],
+    "majorIndustries": ["tourism", "military", "healthcare", "construction", "agriculture"],
+    "neighbors": ["california", "washington", "oregon"],
+    "laborNote": "Hawaii's isolation and housing costs mean nominal salaries dramatically understate the squeeze — many employers add explicit cost-of-living differentials, and public unions are strong."
+  },
+  {
+    "slug": "idaho", "name": "Idaho", "abbrev": "ID", "fips": "16", "region": "West", "population": 1965000,
+    "salaryFactor": 0.92, "costOfLivingIndex": 98.2,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Flat 5.695% state income tax", "note": "Idaho moved to a flat tax in 2023; groceries are taxed but partially offset by a credit." },
+    "topCities": ["Boise", "Meridian", "Nampa", "Idaho Falls", "Pocatello"],
+    "majorIndustries": ["semiconductors", "agriculture", "food processing", "technology", "timber"],
+    "neighbors": ["washington", "oregon", "nevada", "utah", "wyoming", "montana"],
+    "laborNote": "Micron's Boise headquarters and fab expansion anchor a growing tech pay market, while years of rapid in-migration have pushed housing costs faster than wages."
+  },
+  {
+    "slug": "illinois", "name": "Illinois", "abbrev": "IL", "fips": "17", "region": "Midwest", "population": 12550000,
+    "salaryFactor": 1.02, "costOfLivingIndex": 92.1,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Flat 4.95% state income tax", "note": "Illinois' flat rate is constitutionally required, but high property taxes — second highest in the nation — are the bigger burden for homeowners." },
+    "topCities": ["Chicago", "Aurora", "Naperville", "Rockford", "Springfield"],
+    "majorIndustries": ["finance", "logistics", "manufacturing", "healthcare", "agriculture"],
+    "neighbors": ["wisconsin", "iowa", "missouri", "kentucky", "indiana"],
+    "laborNote": "Chicago combines a global finance and trading hub with the country's strongest union construction trades, and Illinois' pay transparency law took effect in 2025.",
+    "categoryFactors": { "Business & Finance": 1.05 }
+  },
+  {
+    "slug": "indiana", "name": "Indiana", "abbrev": "IN", "fips": "18", "region": "Midwest", "population": 6862000,
+    "salaryFactor": 0.93, "costOfLivingIndex": 90.8,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Flat 3.05% state income tax, plus county income taxes", "note": "Every Indiana county levies its own income tax on top of the state rate, typically adding 1–3% depending on where you live." },
+    "topCities": ["Indianapolis", "Fort Wayne", "Evansville", "South Bend", "Carmel"],
+    "majorIndustries": ["manufacturing", "pharmaceuticals", "logistics", "agriculture", "motorsports"],
+    "neighbors": ["michigan", "ohio", "kentucky", "illinois"],
+    "laborNote": "Indiana is the most manufacturing-intensive state in the country, and Eli Lilly's Indianapolis expansion is pulling life-science salaries upward."
+  },
+  {
+    "slug": "iowa", "name": "Iowa", "abbrev": "IA", "fips": "19", "region": "Midwest", "population": 3208000,
+    "salaryFactor": 0.92, "costOfLivingIndex": 89.7,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Flat 3.8% state income tax after the 2025 flat-tax conversion", "note": "Iowa cut from a 8.53% top rate to a flat 3.8% in just four years — one of the fastest tax reductions of any state." },
+    "topCities": ["Des Moines", "Cedar Rapids", "Davenport", "Sioux City", "Iowa City"],
+    "majorIndustries": ["insurance", "agriculture", "advanced manufacturing", "renewable energy", "finance"],
+    "neighbors": ["minnesota", "wisconsin", "illinois", "missouri", "nebraska", "south-dakota"],
+    "laborNote": "Des Moines is one of the country's biggest insurance headquarters towns, giving central Iowa steady white-collar demand and unemployment persistently below the national rate."
+  },
+  {
+    "slug": "kansas", "name": "Kansas", "abbrev": "KS", "fips": "20", "region": "Midwest", "population": 2940000,
+    "salaryFactor": 0.92, "costOfLivingIndex": 87.1,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Two-bracket state income tax of 5.2% and 5.58%", "note": "Kansas simplified to two brackets in 2024; living costs are among the five lowest in the nation." },
+    "topCities": ["Wichita", "Overland Park", "Kansas City", "Topeka", "Olathe"],
+    "majorIndustries": ["aviation manufacturing", "agriculture", "logistics", "energy", "healthcare"],
+    "neighbors": ["nebraska", "missouri", "oklahoma", "colorado"],
+    "laborNote": "Wichita — the 'Air Capital of the World' — hosts Spirit AeroSystems and Textron Aviation, whose machinist and engineering wages set the bar for the region."
+  },
+  {
+    "slug": "kentucky", "name": "Kentucky", "abbrev": "KY", "fips": "21", "region": "South", "population": 4526000,
+    "salaryFactor": 0.9, "costOfLivingIndex": 92.0,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Flat 4% state income tax, stepping down over time", "note": "Kentucky's legislature cuts the flat rate in half-point steps as budget triggers are met; many cities also levy occupational license taxes on wages." },
+    "topCities": ["Louisville", "Lexington", "Bowling Green", "Owensboro", "Covington"],
+    "majorIndustries": ["logistics", "automotive manufacturing", "bourbon", "healthcare", "aerospace exports"],
+    "neighbors": ["indiana", "ohio", "west-virginia", "virginia", "tennessee", "missouri", "illinois"],
+    "laborNote": "UPS Worldport in Louisville makes Kentucky a national logistics anchor, and Toyota's Georgetown plant sets a strong manufacturing wage benchmark."
+  },
+  {
+    "slug": "louisiana", "name": "Louisiana", "abbrev": "LA", "fips": "22", "region": "South", "population": 4574000,
+    "salaryFactor": 0.89, "costOfLivingIndex": 91.0,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Flat 3% state income tax after the 2025 reform", "note": "Louisiana replaced its graduated brackets with a flat 3% in 2025, partially offset by a higher state sales tax." },
+    "topCities": ["New Orleans", "Baton Rouge", "Shreveport", "Lafayette", "Lake Charles"],
+    "majorIndustries": ["petrochemicals", "energy", "shipping", "tourism", "seafood"],
+    "neighbors": ["texas", "arkansas", "mississippi"],
+    "laborNote": "The petrochemical corridor between Baton Rouge and New Orleans pays some of the South's strongest craft and process-operator wages, especially during plant turnarounds."
+  },
+  {
+    "slug": "maine", "name": "Maine", "abbrev": "ME", "fips": "23", "region": "Northeast", "population": 1395000,
+    "salaryFactor": 0.96, "costOfLivingIndex": 109.2,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Graduated state income tax from 5.8% to 7.15%", "note": "Maine's top bracket starts at a relatively low income level, so mid-career professionals often pay the 7.15% rate." },
+    "topCities": ["Portland", "Lewiston", "Bangor", "South Portland", "Auburn"],
+    "majorIndustries": ["healthcare", "tourism", "shipbuilding", "forestry", "fishing"],
+    "neighbors": ["new-hampshire"],
+    "laborNote": "Bath Iron Works' Navy shipbuilding and the oldest median-age workforce in the nation — which keeps labor persistently scarce — both push Maine wages up."
+  },
+  {
+    "slug": "maryland", "name": "Maryland", "abbrev": "MD", "fips": "24", "region": "South", "population": 6180000,
+    "salaryFactor": 1.06, "costOfLivingIndex": 116.5,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Graduated state income tax from 2% to 5.75%, plus county income taxes up to 3.2%", "note": "Maryland's combined state-plus-county rate reaches nearly 9% in some counties — closer to New York than its neighbors." },
+    "topCities": ["Baltimore", "Columbia", "Germantown", "Silver Spring", "Frederick"],
+    "majorIndustries": ["cybersecurity", "biotech", "federal government", "defense", "healthcare"],
+    "neighbors": ["virginia", "west-virginia", "pennsylvania", "delaware"],
+    "laborNote": "Fort Meade, the NSA, and a dense federal-contractor ecosystem make Maryland one of the best-paying states for security-cleared technology work.",
+    "categoryFactors": { "Technology": 1.05 }
+  },
+  {
+    "slug": "massachusetts", "name": "Massachusetts", "abbrev": "MA", "fips": "25", "region": "Northeast", "population": 7001000,
+    "salaryFactor": 1.15, "costOfLivingIndex": 143.7,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Flat 5% state income tax, plus a 4% surtax on income over about $1 million", "note": "The 2023 'millionaires tax' funds transit and education; for most workers the effective rate is the flat 5%." },
+    "topCities": ["Boston", "Worcester", "Springfield", "Cambridge", "Lowell"],
+    "majorIndustries": ["biotech", "higher education", "healthcare", "finance", "technology"],
+    "neighbors": ["new-york", "vermont", "new-hampshire", "connecticut", "rhode-island"],
+    "laborNote": "Kendall Square is the densest biotech cluster on earth, and Massachusetts' 2025 pay transparency law now requires salary ranges in postings statewide.",
+    "categoryFactors": { "Technology": 1.05, "Healthcare": 1.05, "Education": 1.08 }
+  },
+  {
+    "slug": "michigan", "name": "Michigan", "abbrev": "MI", "fips": "26", "region": "Midwest", "population": 10037000,
+    "salaryFactor": 0.97, "costOfLivingIndex": 90.6,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Flat 4.25% state income tax, plus city income taxes in Detroit and others", "note": "Two dozen Michigan cities levy their own income tax — Detroit's is 2.4% for residents — on top of the state's flat rate." },
+    "topCities": ["Detroit", "Grand Rapids", "Warren", "Sterling Heights", "Ann Arbor"],
+    "majorIndustries": ["automotive", "advanced manufacturing", "healthcare", "technology", "agriculture"],
+    "neighbors": ["ohio", "indiana", "wisconsin"],
+    "laborNote": "UAW master agreements still set the benchmark for manufacturing pay across Michigan, and the EV transition is redistributing those jobs toward battery plants."
+  },
+  {
+    "slug": "minnesota", "name": "Minnesota", "abbrev": "MN", "fips": "27", "region": "Midwest", "population": 5738000,
+    "salaryFactor": 1.03, "costOfLivingIndex": 94.1,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Progressive state income tax from 5.35% to 9.85%", "note": "Minnesota taxes are high but buy unusually strong public services; its bottom bracket rate exceeds many states' top rate." },
+    "topCities": ["Minneapolis", "Saint Paul", "Rochester", "Duluth", "Bloomington"],
+    "majorIndustries": ["healthcare", "medical devices", "retail headquarters", "finance", "agriculture"],
+    "neighbors": ["wisconsin", "iowa", "south-dakota", "north-dakota"],
+    "laborNote": "The Mayo Clinic is the state's largest employer and Minneapolis–St. Paul hosts more Fortune 500 headquarters per capita than any other metro, sustaining broad white-collar demand."
+  },
+  {
+    "slug": "mississippi", "name": "Mississippi", "abbrev": "MS", "fips": "28", "region": "South", "population": 2940000,
+    "salaryFactor": 0.83, "costOfLivingIndex": 86.3,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Flat 4.4% state income tax, legislated to phase down", "note": "Mississippi is phasing its income tax toward eventual elimination, and its cost of living is the lowest of any state." },
+    "topCities": ["Jackson", "Gulfport", "Southaven", "Hattiesburg", "Biloxi"],
+    "majorIndustries": ["shipbuilding", "agriculture", "automotive", "gaming", "forestry"],
+    "neighbors": ["louisiana", "arkansas", "tennessee", "alabama"],
+    "laborNote": "Ingalls Shipbuilding in Pascagoula is the state's largest private employer, and the lowest living costs in America stretch every paycheck further than the nominal figures suggest."
+  },
+  {
+    "slug": "missouri", "name": "Missouri", "abbrev": "MO", "fips": "29", "region": "Midwest", "population": 6197000,
+    "salaryFactor": 0.92, "costOfLivingIndex": 88.5,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Graduated state income tax topping out at 4.7%", "note": "Kansas City and St. Louis both levy a 1% earnings tax on people who work in the city, regardless of where they live." },
+    "topCities": ["Kansas City", "Saint Louis", "Springfield", "Columbia", "Independence"],
+    "majorIndustries": ["healthcare", "financial services", "aerospace", "logistics", "agriculture"],
+    "neighbors": ["iowa", "illinois", "kentucky", "tennessee", "arkansas", "oklahoma", "kansas", "nebraska"],
+    "laborNote": "Missouri's pay concentrates in two border metros — Kansas City and St. Louis — where salaries run well above the statewide schedule that rural areas follow."
+  },
+  {
+    "slug": "montana", "name": "Montana", "abbrev": "MT", "fips": "30", "region": "West", "population": 1133000,
+    "salaryFactor": 0.92, "costOfLivingIndex": 102.3,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Two-bracket state income tax of 4.7% and 5.9%", "note": "Montana has no state sales tax, which partially offsets income tax for everyday spending." },
+    "topCities": ["Billings", "Missoula", "Great Falls", "Bozeman", "Helena"],
+    "majorIndustries": ["tourism", "agriculture", "energy", "healthcare", "timber"],
+    "neighbors": ["north-dakota", "south-dakota", "wyoming", "idaho"],
+    "laborNote": "Bozeman's remote-work in-migration boom pushed housing costs up far faster than local wages, a gap employers increasingly bridge with premium pay."
+  },
+  {
+    "slug": "nebraska", "name": "Nebraska", "abbrev": "NE", "fips": "31", "region": "Midwest", "population": 1988000,
+    "salaryFactor": 0.93, "costOfLivingIndex": 92.5,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Graduated state income tax with a top rate of 5.2%, falling by statute", "note": "Nebraska is cutting its top rate toward 3.99% by 2027 under current law." },
+    "topCities": ["Omaha", "Lincoln", "Bellevue", "Grand Island", "Kearney"],
+    "majorIndustries": ["insurance", "agriculture", "rail transportation", "finance", "manufacturing"],
+    "neighbors": ["south-dakota", "iowa", "missouri", "kansas", "colorado", "wyoming"],
+    "laborNote": "Omaha punches far above its weight — Berkshire Hathaway, Mutual of Omaha, and Union Pacific are all headquartered there — and unemployment is routinely among the nation's lowest."
+  },
+  {
+    "slug": "nevada", "name": "Nevada", "abbrev": "NV", "fips": "32", "region": "West", "population": 3194000,
+    "salaryFactor": 0.97, "costOfLivingIndex": 101.3,
+    "incomeTax": { "hasIncomeTax": false, "summary": "No state income tax", "note": "Nevada funds government through gaming and sales taxes; take-home pay compares favorably with neighboring California." },
+    "topCities": ["Las Vegas", "Henderson", "Reno", "North Las Vegas", "Sparks"],
+    "majorIndustries": ["tourism", "gaming", "logistics", "mining", "construction"],
+    "neighbors": ["oregon", "idaho", "utah", "arizona", "california"],
+    "laborNote": "The Culinary Union's master contracts set an unusually high wage-and-benefits floor for hospitality work on the Las Vegas Strip — rare for a right-to-work state."
+  },
+  {
+    "slug": "new-hampshire", "name": "New Hampshire", "abbrev": "NH", "fips": "33", "region": "Northeast", "population": 1402000,
+    "salaryFactor": 1.03, "costOfLivingIndex": 113.6,
+    "incomeTax": { "hasIncomeTax": false, "summary": "No tax on wages — and the interest-and-dividends tax was fully repealed in 2025", "note": "New Hampshire has neither a wage tax nor a sales tax, funding government largely through property taxes, which are among the highest in the country." },
+    "topCities": ["Manchester", "Nashua", "Concord", "Derry", "Dover"],
+    "majorIndustries": ["technology", "defense", "healthcare", "advanced manufacturing", "tourism"],
+    "neighbors": ["maine", "massachusetts", "vermont"],
+    "laborNote": "Southern New Hampshire functions as a tax-advantaged extension of the Boston labor market — many residents earn Massachusetts salaries and pay no wage tax at home."
+  },
+  {
+    "slug": "new-jersey", "name": "New Jersey", "abbrev": "NJ", "fips": "34", "region": "Northeast", "population": 9290000,
+    "salaryFactor": 1.1, "costOfLivingIndex": 113.2,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Progressive state income tax from 1.4% to 10.75%", "note": "New Jersey's top rate kicks in at $1 million, and its property taxes are the highest in the nation — but many residents earn New York salaries." },
+    "topCities": ["Newark", "Jersey City", "Paterson", "Elizabeth", "Trenton"],
+    "majorIndustries": ["pharmaceuticals", "finance", "logistics", "telecommunications", "chemicals"],
+    "neighbors": ["new-york", "pennsylvania", "delaware"],
+    "laborNote": "New Jersey hosts the densest pharmaceutical-headquarters corridor in the country, and its port complex is the busiest on the East Coast — both premium-pay industries.",
+    "categoryFactors": { "Healthcare": 1.05, "Business & Finance": 1.05 }
+  },
+  {
+    "slug": "new-mexico", "name": "New Mexico", "abbrev": "NM", "fips": "35", "region": "West", "population": 2114000,
+    "salaryFactor": 0.92, "costOfLivingIndex": 94.0,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Graduated state income tax from 1.7% to 5.9%", "note": "Oil and gas royalties fund an outsized share of the state budget, keeping personal taxes moderate." },
+    "topCities": ["Albuquerque", "Las Cruces", "Rio Rancho", "Santa Fe", "Roswell"],
+    "majorIndustries": ["national laboratories", "oil and gas", "film production", "aerospace", "tourism"],
+    "neighbors": ["arizona", "utah", "colorado", "oklahoma", "texas"],
+    "laborNote": "Sandia and Los Alamos National Laboratories pay federal-scale salaries that tower over the state's private-sector norms, especially for engineers and scientists."
+  },
+  {
+    "slug": "new-york", "name": "New York", "abbrev": "NY", "fips": "36", "region": "Northeast", "population": 19570000,
+    "salaryFactor": 1.12, "costOfLivingIndex": 123.1,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Progressive state income tax from 4% to 10.9%, plus a separate New York City income tax of up to 3.876% for city residents", "note": "Combined state and city taxes make NYC one of the highest-tax places to earn a paycheck in the U.S., though salaries upstate face only the state tax." },
     "topCities": ["New York City", "Buffalo", "Rochester", "Albany", "Syracuse"],
     "majorIndustries": ["finance", "media", "healthcare", "technology", "education"],
     "neighbors": ["new-jersey", "pennsylvania", "connecticut", "massachusetts", "vermont"],
     "laborNote": "New York requires salary ranges in job postings statewide and has strong public-sector unions, which lifts published pay for teachers, police, and trades well above national schedules.",
-    "occupationFactors": {
-      "software-engineer": 1.16,
-      "registered-nurse": 1.11,
-      "electrician": 1.31,
-      "accountant": 1.16,
-      "high-school-teacher": 1.36,
-      "police-officer": 1.26,
-      "truck-driver": 1.09,
-      "dental-hygienist": 0.96,
-      "marketing-manager": 1.21,
-      "plumber": 1.26
-    }
+    "categoryFactors": { "Business & Finance": 1.1, "Legal": 1.12, "Creative & Service": 1.1 },
+    "occupationFactors": { "software-engineer": 1.16, "registered-nurse": 1.11, "electrician": 1.31, "accountant": 1.16, "high-school-teacher": 1.36, "police-officer": 1.26, "truck-driver": 1.09, "dental-hygienist": 0.96, "marketing-manager": 1.21, "plumber": 1.26 }
   },
   {
-    "slug": "washington",
-    "name": "Washington",
-    "abbrev": "WA",
-    "region": "West",
-    "population": 7790000,
-    "salaryFactor": 1.1,
-    "costOfLivingIndex": 115.9,
-    "incomeTax": {
-      "hasIncomeTax": false,
-      "summary": "No state income tax on wages — though Washington levies a 7% capital gains tax above an inflation-indexed threshold",
-      "note": "Washington pairs zero wage tax with one of the highest state minimum wages in the country, and Seattle sets its own even higher city minimum."
-    },
+    "slug": "north-carolina", "name": "North Carolina", "abbrev": "NC", "fips": "37", "region": "South", "population": 10835000,
+    "salaryFactor": 0.95, "costOfLivingIndex": 95.5,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Flat 4.25% state income tax, scheduled to fall further", "note": "North Carolina's flat rate has dropped steadily for a decade and is legislated to continue falling toward 3.99%." },
+    "topCities": ["Charlotte", "Raleigh", "Greensboro", "Durham", "Winston-Salem"],
+    "majorIndustries": ["banking", "biotech", "technology", "advanced manufacturing", "agriculture"],
+    "neighbors": ["virginia", "tennessee", "georgia", "south-carolina"],
+    "laborNote": "Charlotte is the second-largest banking center in the U.S. and the Research Triangle anchors biotech and tech hiring — two salary markets well above the state's rural baseline.",
+    "categoryFactors": { "Technology": 1.04, "Business & Finance": 1.04 }
+  },
+  {
+    "slug": "north-dakota", "name": "North Dakota", "abbrev": "ND", "fips": "38", "region": "Midwest", "population": 783000,
+    "salaryFactor": 0.95, "costOfLivingIndex": 93.8,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Two-bracket state income tax topping out at 2.5% — the lowest of any income-taxing state", "note": "Most North Dakota workers owe little or no state income tax after the 2023 cuts." },
+    "topCities": ["Fargo", "Bismarck", "Grand Forks", "Minot", "West Fargo"],
+    "majorIndustries": ["oil and gas", "agriculture", "energy", "healthcare", "technology"],
+    "neighbors": ["minnesota", "south-dakota", "montana"],
+    "laborNote": "Bakken oilfield work still carries substantial wage premiums and per-diems, and chronic labor scarcity keeps even entry-level pay above regional norms."
+  },
+  {
+    "slug": "ohio", "name": "Ohio", "abbrev": "OH", "fips": "39", "region": "Midwest", "population": 11785000,
+    "salaryFactor": 0.95, "costOfLivingIndex": 94.2,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Graduated state income tax with a top rate of 3.5%", "note": "Ohio exempts the first ~$26K of income entirely, but nearly every municipality levies its own income tax of 1–3% on top." },
+    "topCities": ["Columbus", "Cleveland", "Cincinnati", "Toledo", "Akron"],
+    "majorIndustries": ["manufacturing", "healthcare", "finance", "logistics", "technology"],
+    "neighbors": ["pennsylvania", "west-virginia", "kentucky", "indiana", "michigan"],
+    "laborNote": "Intel's New Albany fab construction and the Cleveland Clinic system are reshaping Ohio pay at both ends — construction trades and healthcare are the hot markets."
+  },
+  {
+    "slug": "oklahoma", "name": "Oklahoma", "abbrev": "OK", "fips": "40", "region": "South", "population": 4054000,
+    "salaryFactor": 0.88, "costOfLivingIndex": 86.2,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Graduated state income tax from 0.25% to 4.75%", "note": "Oklahoma's living costs are the second lowest in the nation, so modest nominal wages stretch further than they look." },
+    "topCities": ["Oklahoma City", "Tulsa", "Norman", "Broken Arrow", "Edmond"],
+    "majorIndustries": ["energy", "aerospace maintenance", "agriculture", "logistics", "biotech"],
+    "neighbors": ["kansas", "missouri", "arkansas", "texas", "new-mexico", "colorado"],
+    "laborNote": "Tinker Air Force Base and American Airlines' Tulsa maintenance base make Oklahoma a national aircraft-maintenance hub, and the Tulsa Remote program pays workers to relocate."
+  },
+  {
+    "slug": "oregon", "name": "Oregon", "abbrev": "OR", "fips": "41", "region": "West", "population": 4234000,
+    "salaryFactor": 1.03, "costOfLivingIndex": 113.7,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Progressive state income tax from 4.75% to 9.9% — but no sales tax", "note": "Oregon's 8.75% bracket starts at a modest income, so most full-time workers feel a high marginal rate; Portland-area residents may owe additional local taxes." },
+    "topCities": ["Portland", "Salem", "Eugene", "Gresham", "Hillsboro"],
+    "majorIndustries": ["semiconductors", "footwear and apparel", "technology", "timber", "agriculture"],
+    "neighbors": ["washington", "idaho", "nevada", "california"],
+    "laborNote": "Intel is Oregon's largest private employer — the 'Silicon Forest' west of Portland anchors semiconductor pay — and Nike's headquarters drives the apparel-design market.",
+    "categoryFactors": { "Technology": 1.04 }
+  },
+  {
+    "slug": "pennsylvania", "name": "Pennsylvania", "abbrev": "PA", "fips": "42", "region": "Northeast", "population": 12961000,
+    "salaryFactor": 0.99, "costOfLivingIndex": 94.6,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Flat 3.07% state income tax — the lowest flat rate among flat-tax states", "note": "Municipal wage taxes change the picture: Philadelphia's city wage tax is about 3.75% for residents, effectively doubling the burden there." },
+    "topCities": ["Philadelphia", "Pittsburgh", "Allentown", "Erie", "Reading"],
+    "majorIndustries": ["healthcare", "education", "manufacturing", "energy", "finance"],
+    "neighbors": ["new-york", "new-jersey", "delaware", "maryland", "west-virginia", "ohio"],
+    "laborNote": "'Eds and meds' — universities and hospital systems — are the biggest employers in both Philadelphia and Pittsburgh, giving Pennsylvania unusually stable if unspectacular wage growth."
+  },
+  {
+    "slug": "rhode-island", "name": "Rhode Island", "abbrev": "RI", "fips": "44", "region": "Northeast", "population": 1096000,
+    "salaryFactor": 1.03, "costOfLivingIndex": 112.0,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Graduated state income tax from 3.75% to 5.99%", "note": "Rhode Island's brackets are broad, so most professionals pay close to the middle 4.75% rate." },
+    "topCities": ["Providence", "Cranston", "Warwick", "Pawtucket", "East Providence"],
+    "majorIndustries": ["healthcare", "education", "marine trades", "manufacturing", "tourism"],
+    "neighbors": ["connecticut", "massachusetts"],
+    "laborNote": "Providence sits inside the Boston commuting orbit, so Rhode Island wages get pulled upward by Massachusetts employers competing for the same workers."
+  },
+  {
+    "slug": "south-carolina", "name": "South Carolina", "abbrev": "SC", "fips": "45", "region": "South", "population": 5373000,
+    "salaryFactor": 0.9, "costOfLivingIndex": 95.3,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Graduated state income tax with a top rate of 6.2%, being cut annually", "note": "South Carolina is stepping its top rate down toward 6% and exempts a large share of lower incomes entirely." },
+    "topCities": ["Charleston", "Columbia", "North Charleston", "Mount Pleasant", "Greenville"],
+    "majorIndustries": ["automotive", "aerospace", "ports and logistics", "tourism", "advanced manufacturing"],
+    "neighbors": ["georgia", "north-carolina"],
+    "laborNote": "BMW's Spartanburg plant — America's largest auto exporter — and Boeing's Dreamliner line in North Charleston anchor manufacturing pay in a state with the nation's lowest union density."
+  },
+  {
+    "slug": "south-dakota", "name": "South Dakota", "abbrev": "SD", "fips": "46", "region": "Midwest", "population": 919000,
+    "salaryFactor": 0.88, "costOfLivingIndex": 92.2,
+    "incomeTax": { "hasIncomeTax": false, "summary": "No state income tax", "note": "South Dakota has neither personal nor corporate income tax, a legacy of its bank-friendly legal reforms." },
+    "topCities": ["Sioux Falls", "Rapid City", "Aberdeen", "Brookings", "Watertown"],
+    "majorIndustries": ["financial services", "healthcare", "agriculture", "tourism", "bioscience"],
+    "neighbors": ["north-dakota", "minnesota", "iowa", "nebraska", "wyoming", "montana"],
+    "laborNote": "Sioux Falls became a national credit-card banking hub after the state abolished usury caps in 1981, giving it white-collar employment unusual for its size."
+  },
+  {
+    "slug": "tennessee", "name": "Tennessee", "abbrev": "TN", "fips": "47", "region": "South", "population": 7126000,
+    "salaryFactor": 0.91, "costOfLivingIndex": 90.3,
+    "incomeTax": { "hasIncomeTax": false, "summary": "No state income tax on wages", "note": "Tennessee fully repealed its investment-income tax in 2021; the trade-off is one of the highest combined sales tax rates in the country." },
+    "topCities": ["Nashville", "Memphis", "Knoxville", "Chattanooga", "Clarksville"],
+    "majorIndustries": ["healthcare management", "logistics", "automotive", "music and entertainment", "tourism"],
+    "neighbors": ["kentucky", "virginia", "north-carolina", "georgia", "alabama", "mississippi", "arkansas", "missouri"],
+    "laborNote": "Nashville is the healthcare-management capital of America (HCA and hundreds of health companies), while FedEx's Memphis superhub anchors the nation's logistics network."
+  },
+  {
+    "slug": "texas", "name": "Texas", "abbrev": "TX", "fips": "48", "region": "South", "population": 30500000,
+    "salaryFactor": 0.97, "costOfLivingIndex": 92.7,
+    "incomeTax": { "hasIncomeTax": false, "summary": "No state income tax — Texas is one of nine states with zero tax on wages", "note": "Texas funds government largely through property and sales taxes, so homeowners face property tax rates among the highest in the nation (averaging around 1.6%)." },
+    "topCities": ["Houston", "Dallas–Fort Worth", "Austin", "San Antonio", "El Paso"],
+    "majorIndustries": ["energy", "technology", "healthcare", "logistics", "manufacturing"],
+    "neighbors": ["new-mexico", "oklahoma", "arkansas", "louisiana"],
+    "laborNote": "Texas is a right-to-work state with no state minimum wage above the federal floor, so pay is driven almost entirely by market demand rather than mandates — which favors in-demand skilled roles.",
+    "occupationFactors": { "software-engineer": 0.99, "registered-nurse": 0.95, "electrician": 0.94, "accountant": 1.0, "high-school-teacher": 0.95, "police-officer": 0.91, "truck-driver": 0.96, "dental-hygienist": 0.94, "marketing-manager": 0.94, "plumber": 0.92 }
+  },
+  {
+    "slug": "utah", "name": "Utah", "abbrev": "UT", "fips": "49", "region": "West", "population": 3418000,
+    "salaryFactor": 0.97, "costOfLivingIndex": 103.2,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Flat 4.55% state income tax", "note": "Utah trims its flat rate almost every legislative session; the state's young, fast-growing workforce keeps labor markets tight." },
+    "topCities": ["Salt Lake City", "West Valley City", "Provo", "West Jordan", "Orem"],
+    "majorIndustries": ["technology", "finance", "healthcare", "outdoor products", "mining"],
+    "neighbors": ["idaho", "wyoming", "colorado", "new-mexico", "arizona", "nevada"],
+    "laborNote": "The 'Silicon Slopes' corridor between Salt Lake City and Provo has one of the country's fastest-growing tech job markets, backed by the youngest median-age workforce of any state.",
+    "categoryFactors": { "Technology": 1.04 }
+  },
+  {
+    "slug": "vermont", "name": "Vermont", "abbrev": "VT", "fips": "50", "region": "Northeast", "population": 647000,
+    "salaryFactor": 0.99, "costOfLivingIndex": 114.4,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Graduated state income tax from 3.35% to 8.75%", "note": "Vermont's small tax base means high rates; property taxes fund an unusually large share of school spending." },
+    "topCities": ["Burlington", "Essex", "South Burlington", "Colchester", "Rutland"],
+    "majorIndustries": ["healthcare", "education", "semiconductors", "specialty food", "tourism"],
+    "neighbors": ["new-york", "new-hampshire", "massachusetts"],
+    "laborNote": "GlobalFoundries' Essex Junction fab is Vermont's largest private employer, and the state's tiny labor pool means employers routinely recruit — and pay — to relocate workers."
+  },
+  {
+    "slug": "virginia", "name": "Virginia", "abbrev": "VA", "fips": "51", "region": "South", "population": 8716000,
+    "salaryFactor": 1.04, "costOfLivingIndex": 101.0,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Graduated state income tax from 2% to 5.75%", "note": "Virginia's top bracket starts at just $17,000, so nearly all full-time workers pay an effective flat 5.75% on most income." },
+    "topCities": ["Virginia Beach", "Norfolk", "Chesapeake", "Richmond", "Arlington"],
+    "majorIndustries": ["defense", "federal contracting", "data centers", "shipbuilding", "technology"],
+    "neighbors": ["maryland", "west-virginia", "kentucky", "tennessee", "north-carolina"],
+    "laborNote": "Northern Virginia hosts the world's largest data-center market and a dense federal-contracting ecosystem — pay there runs a full tier above Richmond and Hampton Roads.",
+    "categoryFactors": { "Technology": 1.06 }
+  },
+  {
+    "slug": "washington", "name": "Washington", "abbrev": "WA", "fips": "53", "region": "West", "population": 7790000,
+    "salaryFactor": 1.1, "costOfLivingIndex": 115.9,
+    "incomeTax": { "hasIncomeTax": false, "summary": "No state income tax on wages — though Washington levies a 7% capital gains tax above an inflation-indexed threshold", "note": "Washington pairs zero wage tax with one of the highest state minimum wages in the country, and Seattle sets its own even higher city minimum." },
     "topCities": ["Seattle", "Spokane", "Tacoma", "Bellevue", "Vancouver"],
     "majorIndustries": ["technology", "aerospace", "healthcare", "maritime trade", "agriculture"],
     "neighbors": ["oregon", "idaho"],
     "laborNote": "Washington's pay transparency law requires salary ranges in every job posting, and the concentration of tech headquarters around Seattle pulls average wages up across many occupations, not just software.",
-    "occupationFactors": {
-      "software-engineer": 1.27,
-      "registered-nurse": 1.16,
-      "electrician": 1.29,
-      "accountant": 1.05,
-      "high-school-teacher": 1.12,
-      "police-officer": 1.22,
-      "truck-driver": 1.11,
-      "dental-hygienist": 1.22,
-      "marketing-manager": 1.09,
-      "plumber": 1.24
-    }
+    "categoryFactors": { "Technology": 1.08 },
+    "occupationFactors": { "software-engineer": 1.27, "registered-nurse": 1.16, "electrician": 1.29, "accountant": 1.05, "high-school-teacher": 1.12, "police-officer": 1.22, "truck-driver": 1.11, "dental-hygienist": 1.22, "marketing-manager": 1.09, "plumber": 1.24 }
+  },
+  {
+    "slug": "west-virginia", "name": "West Virginia", "abbrev": "WV", "fips": "54", "region": "South", "population": 1770000,
+    "salaryFactor": 0.86, "costOfLivingIndex": 84.1,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Graduated state income tax with a top rate of 4.82% after recent cuts", "note": "West Virginia has cut income tax rates repeatedly since 2023, with automatic triggers for further reductions." },
+    "topCities": ["Charleston", "Huntington", "Morgantown", "Parkersburg", "Wheeling"],
+    "majorIndustries": ["energy", "chemicals", "healthcare", "tourism", "aerospace"],
+    "neighbors": ["ohio", "pennsylvania", "maryland", "virginia", "kentucky"],
+    "laborNote": "WVU Medicine is now the state's largest employer as coal employment fades, and the lowest cost of living in the country makes modest salaries go unusually far."
+  },
+  {
+    "slug": "wisconsin", "name": "Wisconsin", "abbrev": "WI", "fips": "55", "region": "Midwest", "population": 5911000,
+    "salaryFactor": 0.96, "costOfLivingIndex": 96.7,
+    "incomeTax": { "hasIncomeTax": true, "summary": "Graduated state income tax from 3.5% to 7.65%", "note": "Most middle-income Wisconsin workers fall in the 4.4% or 5.3% brackets; the 7.65% top rate applies only to high earners." },
+    "topCities": ["Milwaukee", "Madison", "Green Bay", "Kenosha", "Racine"],
+    "majorIndustries": ["manufacturing", "healthcare", "dairy and agriculture", "insurance", "paper products"],
+    "neighbors": ["michigan", "minnesota", "iowa", "illinois"],
+    "laborNote": "Epic Systems outside Madison is one of the biggest health-software employers in the world, and Wisconsin trails only Indiana in manufacturing's share of state jobs."
+  },
+  {
+    "slug": "wyoming", "name": "Wyoming", "abbrev": "WY", "fips": "56", "region": "West", "population": 584000,
+    "salaryFactor": 0.94, "costOfLivingIndex": 95.1,
+    "incomeTax": { "hasIncomeTax": false, "summary": "No state income tax", "note": "Mineral royalties fund most of Wyoming's budget, keeping personal taxes among the lowest in the nation." },
+    "topCities": ["Cheyenne", "Casper", "Laramie", "Gillette", "Rock Springs"],
+    "majorIndustries": ["mining", "oil and gas", "tourism", "agriculture", "utilities"],
+    "neighbors": ["montana", "south-dakota", "nebraska", "colorado", "utah", "idaho"],
+    "laborNote": "Energy-extraction jobs pay Wyoming's strongest wages and come with no income tax, but the state's tiny workforce means thin markets for many professional occupations."
   }
 ]

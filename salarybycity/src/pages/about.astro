@@ -1,0 +1,62 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { DATA_YEAR, occupations, states } from '../lib/salary';
+---
+
+<BaseLayout
+  title="About SalaryByCity"
+  description="Why SalaryByCity exists: free, signup-free salary data for every U.S. state, built transparently on Bureau of Labor Statistics figures — with no lead selling and no paywalls."
+>
+  <article class="prose-page mx-auto max-w-3xl py-10">
+    <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">About SalaryByCity</h1>
+
+    <p class="mt-6 leading-relaxed text-stone-700 dark:text-stone-300">
+      SalaryByCity answers one deceptively simple question: <strong>what does a job actually pay
+      where you live?</strong> National salary averages are quoted everywhere, but they are close to
+      useless for real decisions. A registered nurse weighing offers in Sacramento and Jackson is
+      looking at a pay gap of more than $50,000 a year — and a cost-of-living gap that rewrites what
+      those numbers mean. We built this site to put that state-level picture in one place, for free.
+    </p>
+
+    <h2 class="mt-10 text-2xl font-bold tracking-tight">What we publish</h2>
+    <p class="mt-4 leading-relaxed text-stone-700 dark:text-stone-300">
+      We currently cover {occupations.length} occupations across all {states.length} U.S. states —
+      {occupations.length * states.length} occupation-and-state combinations. Every page shows the
+      median salary, the full percentile range from entry-level to top earners, how the state's cost
+      of living changes what the salary is worth, which cities and industries do the hiring, and how
+      the state's tax rules affect take-home pay. All figures are grounded in the U.S. Bureau of
+      Labor Statistics' Occupational Employment and Wage Statistics program — the federal
+      government's own wage survey — and our <a href="/methodology/" class="text-blue-700 underline dark:text-blue-400">methodology page</a>
+      explains exactly how each number is produced.
+    </p>
+
+    <h2 class="mt-10 text-2xl font-bold tracking-tight">What makes us different</h2>
+    <p class="mt-4 leading-relaxed text-stone-700 dark:text-stone-300">
+      Most salary websites are lead-generation businesses. They show you a number so they can sell
+      your attention — or your contact details — to recruiters, schools, and lenders. SalaryByCity
+      does none of that. <strong>We don't sell leads. We don't require an account. There is no
+      paywall, no "unlock full report" button, and no email gate.</strong> Every figure we have is on
+      the page, for everyone, the moment it loads. The site is supported by ordinary display
+      advertising, which keeps our incentives simple: publish accurate, useful pages, and be
+      transparent about where the data comes from.
+    </p>
+
+    <h2 class="mt-10 text-2xl font-bold tracking-tight">Who this is for</h2>
+    <p class="mt-4 leading-relaxed text-stone-700 dark:text-stone-300">
+      Job seekers comparing offers across state lines. Workers preparing for a salary negotiation
+      who want a defensible, government-sourced benchmark. Students choosing between career paths.
+      People considering a relocation who need to know whether a "raise" survives the move. If a
+      salary decision depends on <em>where</em>, this site is for you.
+    </p>
+
+    <h2 class="mt-10 text-2xl font-bold tracking-tight">Honesty about limits</h2>
+    <p class="mt-4 leading-relaxed text-stone-700 dark:text-stone-300">
+      Statistics describe markets, not individuals. Your offer will depend on your experience,
+      employer, and negotiation — our numbers are the {DATA_YEAR} market context, not a promise.
+      Where the underlying federal data is suppressed or modeled, we say so plainly on the
+      <a href="/methodology/" class="text-blue-700 underline dark:text-blue-400">methodology page</a>.
+      Questions, corrections, or suggestions are always welcome via our
+      <a href="/contact/" class="text-blue-700 underline dark:text-blue-400">contact page</a>.
+    </p>
+  </article>
+</BaseLayout>

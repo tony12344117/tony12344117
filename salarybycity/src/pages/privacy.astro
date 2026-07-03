@@ -1,0 +1,75 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { DATA_YEAR } from '../lib/salary';
+---
+
+<BaseLayout
+  title="Privacy Policy"
+  description="SalaryByCity's privacy policy: what little we collect, how cookies and analytics (GA4) and advertising (Google AdSense) work here, and the choices and rights you have."
+>
+  <article class="mx-auto max-w-3xl py-10">
+    <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">Privacy Policy</h1>
+    <p class="mt-3 text-stone-500 dark:text-stone-400">Effective date: January 1, {DATA_YEAR}</p>
+
+    <p class="mt-6 leading-relaxed text-stone-700 dark:text-stone-300">
+      SalaryByCity is built to need as little of your data as possible. You can read every page on
+      this site without creating an account, entering an email address, or telling us anything about
+      yourself. We do not sell, rent, or trade personal information, and we do not operate as a
+      lead-generation service. This policy explains the limited data that is collected when you
+      visit, why, and the choices you have.
+    </p>
+
+    <h2 class="mt-10 text-2xl font-bold tracking-tight">Information we collect</h2>
+    <p class="mt-4 leading-relaxed text-stone-700 dark:text-stone-300">
+      <strong>We collect no directly identifying information.</strong> There are no user accounts,
+      registration forms, or newsletters. If you email us via the contact page, we receive your
+      email address and message, use them only to reply, and delete them when the conversation is
+      resolved. Like virtually all websites, our hosting infrastructure records standard server logs
+      — IP address, browser type, pages requested, and timestamps — used solely for security and
+      performance monitoring, and retained briefly.
+    </p>
+
+    <h2 class="mt-10 text-2xl font-bold tracking-tight">Analytics (Google Analytics 4)</h2>
+    <p class="mt-4 leading-relaxed text-stone-700 dark:text-stone-300">
+      We use Google Analytics 4 (GA4) to understand aggregate usage — which pages are read, roughly
+      where visitors come from, and how the site performs. GA4 sets cookies and collects device and
+      usage information as described in
+      <a href="https://policies.google.com/privacy" class="text-blue-700 underline dark:text-blue-400" rel="noopener">Google's Privacy Policy</a>.
+      We have IP anonymization enabled, we do not upload any user-provided data to it, and we use
+      the reports only in aggregate. You can opt out with the
+      <a href="https://tools.google.com/dlpage/gaoptout" class="text-blue-700 underline dark:text-blue-400" rel="noopener">Google Analytics opt-out browser add-on</a>.
+    </p>
+
+    <h2 class="mt-10 text-2xl font-bold tracking-tight">Advertising (Google AdSense) and cookies</h2>
+    <p class="mt-4 leading-relaxed text-stone-700 dark:text-stone-300">
+      This site is supported by display advertising served by Google AdSense. Google and its
+      partners use advertising cookies — including, where applicable, personalized-advertising
+      cookies — to serve ads based on your visits to this and other websites. You can control
+      personalized advertising at
+      <a href="https://adssettings.google.com" class="text-blue-700 underline dark:text-blue-400" rel="noopener">Google Ads Settings</a>,
+      and learn how Google uses data from partner sites at
+      <a href="https://policies.google.com/technologies/partner-sites" class="text-blue-700 underline dark:text-blue-400" rel="noopener">policies.google.com/technologies/partner-sites</a>.
+      Visitors in regions with consent requirements (such as the EEA and UK) are shown a consent
+      dialog before any non-essential cookies are set. You can also block or delete cookies at any
+      time in your browser settings; the site's content works fully without them.
+    </p>
+
+    <h2 class="mt-10 text-2xl font-bold tracking-tight">Your rights</h2>
+    <p class="mt-4 leading-relaxed text-stone-700 dark:text-stone-300">
+      Depending on where you live (including under GDPR and CCPA/CPRA), you may have rights to
+      access, correct, or delete personal information and to opt out of the "sale" or "sharing" of
+      it. Because we hold essentially no personal data, most requests are satisfied already — but we
+      will honor any request we can act on. Contact us at
+      <a href="mailto:privacy@salarybycity.com" class="text-blue-700 underline dark:text-blue-400">privacy@salarybycity.com</a>.
+      We do not knowingly collect information from children under 13, and this site is not directed
+      at them.
+    </p>
+
+    <h2 class="mt-10 text-2xl font-bold tracking-tight">Changes to this policy</h2>
+    <p class="mt-4 leading-relaxed text-stone-700 dark:text-stone-300">
+      If our practices change — for example, if we ever add a newsletter — we will update this page
+      and its effective date before the change takes effect. Material changes will be noted
+      prominently on the homepage.
+    </p>
+  </article>
+</BaseLayout>

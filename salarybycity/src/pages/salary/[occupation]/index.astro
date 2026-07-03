@@ -1,0 +1,148 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PercentileChart from '../../../components/PercentileChart.astro';
+import {
+  DATA_YEAR,
+  SOURCE_NOTE,
+  fmtCompact,
+  fmtUSD,
+  getSalary,
+  hourly,
+  occupations,
+  salaryPath,
+  states,
+} from '../../../lib/salary';
+
+export function getStaticPaths() {
+  return occupations.map((occupation) => ({
+    params: { occupation: occupation.slug },
+    props: { occupation },
+  }));
+}
+
+const { occupation } = Astro.props;
+
+const rows = states
+  .map((state) => ({ state, median: getSalary(occupation, state).median }))
+  .sort((a, b) => b.median - a.median);
+
+const top = rows[0]!;
+const bottom = rows[rows.length - 1]!;
+const nat = occupation.national;
+const siteUrl = Astro.site!.toString().replace(/\/$/, '');
+
+const description = `${occupation.title} salaries in all ${states.length} U.S. states for ${DATA_YEAR}. National median: ${fmtUSD(nat.median)}/yr. Highest pay: ${top.state.name} (${fmtCompact(top.median)}); lowest: ${bottom.state.name} (${fmtCompact(bottom.median)}). Compare every state.`;
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl + '/' },
+      { '@type': 'ListItem', position: 2, name: 'Jobs', item: siteUrl + '/jobs/' },
+      { '@type': 'ListItem', position: 3, name: occupation.title, item: `${siteUrl}/salary/${occupation.slug}/` },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: `${occupation.title} salary by state (${DATA_YEAR})`,
+    itemListElement: rows.map(({ state }, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: `${occupation.title} salary in ${state.name}`,
+      url: siteUrl + salaryPath(occupation.slug, state.slug),
+    })),
+  },
+];
+---
+
+<BaseLayout
+  title={`${occupation.title} Salary by State (${DATA_YEAR})`}
+  description={description}
+  jsonLd={jsonLd}
+>
+  <nav class="pt-6 text-sm text-stone-500 dark:text-stone-400" aria-label="Breadcrumb">
+    <a href="/" class="hover:underline">Home</a>
+    <span class="mx-1">/</span>
+    <a href="/jobs/" class="hover:underline">Jobs</a>
+    <span class="mx-1">/</span>
+    <span>{occupation.title}</span>
+  </nav>
+
+  <section class="py-8">
+    <p class="text-sm font-semibold uppercase tracking-wide text-blue-700 dark:text-blue-400">
+      {occupation.category} · SOC {occupation.socCode}
+    </p>
+    <h1 class="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
+      {occupation.title} Salary by State ({DATA_YEAR})
+    </h1>
+    <div class="mt-6 flex flex-wrap items-end gap-x-8 gap-y-4">
+      <div>
+        <p class="text-sm text-stone-500 dark:text-stone-400">U.S. median annual salary</p>
+        <p class="text-5xl font-semibold tracking-tight sm:text-6xl">{fmtUSD(nat.median)}</p>
+      </div>
+      <dl class="flex gap-8 pb-1 text-sm">
+        <div>
+          <dt class="text-stone-500 dark:text-stone-400">Hourly</dt>
+          <dd class="font-semibold">{hourly(nat.median)}/hr</dd>
+        </div>
+        <div>
+          <dt class="text-stone-500 dark:text-stone-400">Employed nationwide</dt>
+          <dd class="font-semibold">{occupation.employmentNational.toLocaleString('en-US')}</dd>
+        </div>
+        <div>
+          <dt class="text-stone-500 dark:text-stone-400">Typical education</dt>
+          <dd class="font-semibold">{occupation.education}</dd>
+        </div>
+      </dl>
+    </div>
+    <p class="mt-6 max-w-3xl leading-relaxed text-stone-700 dark:text-stone-300">
+      {occupation.shortDesc} Nationally, {occupation.plural} earn between {fmtUSD(nat.p10)} (10th
+      percentile) and {fmtUSD(nat.p90)} (90th percentile) per year. Location changes that picture
+      substantially: the median in {top.state.name} ({fmtUSD(top.median)}) runs well ahead of
+      {bottom.state.name} ({fmtUSD(bottom.median)}). {occupation.outlookNote} Pick a state below for
+      percentile ranges, cost-of-living context, taxes, and nearby-state comparisons.
+    </p>
+  </section>
+
+  <section class="pb-10">
+    <h2 class="mb-4 text-2xl font-bold tracking-tight">National salary range</h2>
+    <PercentileChart salary={nat} occupationTitle={occupation.title} stateName="United States" />
+    <p class="mt-3 text-sm text-stone-500 dark:text-stone-400">{SOURCE_NOTE}</p>
+  </section>
+
+  <section class="pb-10">
+    <h2 class="mb-4 text-2xl font-bold tracking-tight">
+      {occupation.title} median salary in every state
+    </h2>
+    <div class="overflow-x-auto rounded-xl border border-stone-200 dark:border-stone-800">
+      <table class="w-full text-left text-sm" style="font-variant-numeric: tabular-nums;">
+        <thead class="bg-stone-100 text-stone-600 dark:bg-stone-900 dark:text-stone-300">
+          <tr>
+            <th class="px-4 py-3 font-medium">#</th>
+            <th class="px-4 py-3 font-medium">State</th>
+            <th class="px-4 py-3 font-medium">Median salary</th>
+            <th class="px-4 py-3 font-medium">vs. national</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-stone-200 bg-white dark:divide-stone-800 dark:bg-stone-950">
+          {rows.map(({ state, median }, i) => (
+            <tr>
+              <td class="px-4 py-2.5 text-stone-400">{i + 1}</td>
+              <td class="px-4 py-2.5">
+                <a href={salaryPath(occupation.slug, state.slug)} class="font-medium text-blue-700 hover:underline dark:text-blue-400">
+                  {state.name}
+                </a>
+              </td>
+              <td class="px-4 py-2.5">{fmtUSD(median)}</td>
+              <td class="px-4 py-2.5 text-stone-500 dark:text-stone-400">
+                {median >= nat.median ? '+' : '−'}{fmtUSD(Math.abs(median - nat.median))}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</BaseLayout>

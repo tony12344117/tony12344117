@@ -1,0 +1,83 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { DATA_YEAR, occupations, states } from '../lib/salary';
+---
+
+<BaseLayout
+  title="Salary Methodology: How We Calculate Every Number"
+  description="Exactly how SalaryByCity produces its figures: BLS OEWS source data, percentile definitions, state adjustment methods, cost-of-living context, update schedule, and known limitations."
+>
+  <article class="mx-auto max-w-3xl py-10">
+    <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">Salary Methodology</h1>
+    <p class="mt-3 text-stone-500 dark:text-stone-400">Last reviewed: January {DATA_YEAR}</p>
+
+    <p class="mt-6 leading-relaxed text-stone-700 dark:text-stone-300">
+      Every number on SalaryByCity can be traced to a public, government source and a documented
+      calculation. This page describes that pipeline end to end — because a salary statistic you
+      can't audit is just a rumor with a chart.
+    </p>
+
+    <h2 class="mt-10 text-2xl font-bold tracking-tight">1. Primary data source</h2>
+    <p class="mt-4 leading-relaxed text-stone-700 dark:text-stone-300">
+      Our wage data is based on the <strong>Occupational Employment and Wage Statistics (OEWS)</strong>
+      program of the U.S. Bureau of Labor Statistics (<a href="https://www.bls.gov/oes/" class="text-blue-700 underline dark:text-blue-400" rel="noopener">bls.gov/oes</a>).
+      OEWS is a semiannual survey of roughly 1.1 million business establishments — the most
+      comprehensive occupational wage measurement in the United States. Each occupation is
+      identified by its Standard Occupational Classification (SOC) code, which we display on every
+      occupation page so you can verify our figures against the BLS website directly. We retrieve
+      the data programmatically through the <a href="https://www.bls.gov/developers/" class="text-blue-700 underline dark:text-blue-400" rel="noopener">BLS Public Data API</a>.
+    </p>
+
+    <h2 class="mt-10 text-2xl font-bold tracking-tight">2. What the percentiles mean</h2>
+    <p class="mt-4 leading-relaxed text-stone-700 dark:text-stone-300">
+      Every salary page shows five points of the annual wage distribution. The <strong>10th
+      percentile</strong> means 10% of workers in that occupation and state earn less — a realistic
+      entry-level figure. The <strong>median (50th percentile)</strong> is the midpoint: half earn
+      more, half earn less. We lead with the median rather than the mean because a handful of very
+      high earners can drag an average far above what a typical worker sees. The <strong>90th
+      percentile</strong> approximates senior, top-of-market pay. BLS "top-codes" annual wages above
+      roughly $239,200; where that occurs (some physicians, lawyers, and executives), the true top
+      decile is higher than shown, and we note it.
+    </p>
+
+    <h2 class="mt-10 text-2xl font-bold tracking-tight">3. How state figures are produced</h2>
+    <p class="mt-4 leading-relaxed text-stone-700 dark:text-stone-300">
+      Where BLS publishes an exact state-level wage distribution for an occupation, we use it
+      directly. For a minority of state-and-occupation combinations, BLS suppresses data to protect
+      survey confidentiality. In those cases we estimate the distribution by applying a
+      <strong>state adjustment factor</strong> — derived from the state's overall wage level relative
+      to the national average, refined by industry mix — to the occupation's national percentiles,
+      rounded to the nearest $10. Estimated figures are always labeled "modeled on" BLS data rather
+      than presented as survey results. Current figures are modeled on the May 2024 OEWS vintage,
+      adjusted to {DATA_YEAR}.
+    </p>
+
+    <h2 class="mt-10 text-2xl font-bold tracking-tight">4. Cost-of-living and tax context</h2>
+    <p class="mt-4 leading-relaxed text-stone-700 dark:text-stone-300">
+      Cost-of-living indexes (U.S. average = 100) reflect composite state price levels for housing,
+      groceries, utilities, transportation, and healthcare. The "purchasing power" figure on each
+      page divides the state median salary by the state's index — a standard real-wage adjustment.
+      State income tax summaries reflect statutory rates in effect for {DATA_YEAR}; they are context
+      for comparing states, not tax advice.
+    </p>
+
+    <h2 class="mt-10 text-2xl font-bold tracking-tight">5. Update schedule</h2>
+    <p class="mt-4 leading-relaxed text-stone-700 dark:text-stone-300">
+      BLS releases new OEWS estimates once a year, typically each spring. We refresh our dataset
+      with each release, re-verify state tax and cost-of-living context at the same time, and
+      rebuild every page. The "last reviewed" date at the top of this page reflects the most recent
+      full review.
+    </p>
+
+    <h2 class="mt-10 text-2xl font-bold tracking-tight">6. Known limitations</h2>
+    <p class="mt-4 leading-relaxed text-stone-700 dark:text-stone-300">
+      OEWS measures base wages — it excludes most bonuses, equity, overtime, and self-employment
+      income, which materially understates total compensation in fields like finance, law, sales,
+      and software. Statewide figures also mask metro-level variation: pay in a state's largest
+      city usually runs above its statewide median. Finally, statistics describe the market, not
+      your offer. We currently publish {occupations.length} occupations × {states.length} states;
+      if you spot an error, please
+      <a href="/contact/" class="text-blue-700 underline dark:text-blue-400">tell us</a> — corrections ship in days, not quarters.
+    </p>
+  </article>
+</BaseLayout>

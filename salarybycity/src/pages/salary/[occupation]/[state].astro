@@ -56,7 +56,9 @@ const jsonLd = [
     <span class="mx-1">/</span>
     <a href="/jobs/" class="hover:underline">Jobs</a>
     <span class="mx-1">/</span>
-    <span>{occupation.title} in {state.name}</span>
+    <a href={`/salary/${occupation.slug}/`} class="hover:underline">{occupation.title}</a>
+    <span class="mx-1">/</span>
+    <span>{state.name}</span>
   </nav>
 
   {/* 1. Hero */}

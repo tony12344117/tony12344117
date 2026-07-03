@@ -1,0 +1,79 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Contact Us"
+  description="How to reach SalaryByCity — data corrections, methodology questions, press, and privacy requests. Direct email, no account or form-wall, typical reply within two business days."
+>
+  <article class="mx-auto max-w-3xl py-10">
+    <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">Contact</h1>
+
+    <p class="mt-6 leading-relaxed text-stone-700 dark:text-stone-300">
+      We read every message. There's no ticket system to fight through, no account required, and no
+      chatbot standing between you and a human — just email. We typically reply within two business
+      days, and data-correction reports get priority because accuracy is the entire point of this
+      site.
+    </p>
+
+    <div class="mt-8 grid gap-4 sm:grid-cols-2">
+      <div class="rounded-xl border border-stone-200 bg-white p-5 dark:border-stone-800 dark:bg-stone-900">
+        <h2 class="font-bold">General &amp; data corrections</h2>
+        <p class="mt-1 text-sm text-stone-600 dark:text-stone-300">
+          Spotted a number that looks wrong? Include the page URL and, if you can, a source we can
+          check against.
+        </p>
+        <a href="mailto:hello@salarybycity.com" class="mt-3 inline-block font-semibold text-blue-700 underline dark:text-blue-400">hello@salarybycity.com</a>
+      </div>
+      <div class="rounded-xl border border-stone-200 bg-white p-5 dark:border-stone-800 dark:bg-stone-900">
+        <h2 class="font-bold">Methodology questions</h2>
+        <p class="mt-1 text-sm text-stone-600 dark:text-stone-300">
+          Most answers are already on the <a href="/methodology/" class="text-blue-700 underline dark:text-blue-400">methodology page</a> — for anything deeper, write to us.
+        </p>
+        <a href="mailto:data@salarybycity.com" class="mt-3 inline-block font-semibold text-blue-700 underline dark:text-blue-400">data@salarybycity.com</a>
+      </div>
+      <div class="rounded-xl border border-stone-200 bg-white p-5 dark:border-stone-800 dark:bg-stone-900">
+        <h2 class="font-bold">Press &amp; citation</h2>
+        <p class="mt-1 text-sm text-stone-600 dark:text-stone-300">
+          Journalists and researchers may quote our pages with attribution and a link. We're happy
+          to provide context on request.
+        </p>
+        <a href="mailto:press@salarybycity.com" class="mt-3 inline-block font-semibold text-blue-700 underline dark:text-blue-400">press@salarybycity.com</a>
+      </div>
+      <div class="rounded-xl border border-stone-200 bg-white p-5 dark:border-stone-800 dark:bg-stone-900">
+        <h2 class="font-bold">Privacy requests</h2>
+        <p class="mt-1 text-sm text-stone-600 dark:text-stone-300">
+          Access, deletion, or opt-out requests under GDPR/CCPA — see our <a href="/privacy/" class="text-blue-700 underline dark:text-blue-400">Privacy Policy</a> for details.
+        </p>
+        <a href="mailto:privacy@salarybycity.com" class="mt-3 inline-block font-semibold text-blue-700 underline dark:text-blue-400">privacy@salarybycity.com</a>
+      </div>
+    </div>
+
+    <h2 class="mt-10 text-2xl font-bold tracking-tight">Before you write about a salary figure</h2>
+    <p class="mt-4 leading-relaxed text-stone-700 dark:text-stone-300">
+      A quick note that saves a round-trip: our numbers are statistical distributions for an
+      occupation in a state, not quotes for a specific job. If your offer differs from our median,
+      both can be right — the percentile range on each page shows how wide real-world pay runs. But
+      if you believe a figure misrepresents the underlying BLS data, that's exactly the kind of
+      email we want. Tell us the occupation, the state, the number you expected, and where your
+      expectation comes from, and we'll investigate against the source series and reply with what we
+      find. Corrections, when warranted, are published in days.
+    </p>
+
+    <h2 class="mt-10 text-2xl font-bold tracking-tight">What we can't help with</h2>
+    <p class="mt-4 leading-relaxed text-stone-700 dark:text-stone-300">
+      To set expectations honestly: we are a statistics site, not a career service. We can't review
+      your résumé, negotiate on your behalf, connect you with employers or recruiters, or advise on
+      your individual tax situation. Requests to buy our traffic, place sponsored content disguised
+      as data, or purchase visitor information will be declined — that model is exactly what this
+      site was built to avoid.
+    </p>
+
+    <p class="mt-6 leading-relaxed text-stone-700 dark:text-stone-300">
+      And one thing we'll never do with your email: add it to a marketing list, share it with
+      recruiters, or use it for anything beyond answering you. We don't sell leads, and there's
+      nothing to sign up for — see
+      <a href="/about/" class="text-blue-700 underline dark:text-blue-400">why we built this site</a>.
+    </p>
+  </article>
+</BaseLayout>

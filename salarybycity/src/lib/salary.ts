@@ -32,6 +32,8 @@ export interface StateInfo {
   slug: string;
   name: string;
   abbrev: string;
+  /** State FIPS code — used to build BLS OEWS series IDs in scripts/fetch-bls.mjs. */
+  fips: string;
   region: string;
   population: number;
   salaryFactor: number;
@@ -41,7 +43,12 @@ export interface StateInfo {
   majorIndustries: string[];
   neighbors: string[];
   laborNote: string;
-  occupationFactors: Record<string, number>;
+  /** Per-category wage adjustment relative to the state's overall factor. */
+  categoryFactors?: Record<string, number>;
+  /** Per-occupation absolute overrides of the factor model. */
+  occupationFactors?: Record<string, number>;
+  /** Exact BLS percentiles written by scripts/fetch-bls.mjs; wins over the factor model. */
+  stateWages?: Record<string, Percentiles>;
 }
 
 export const occupations = occupationsData as Occupation[];
@@ -59,11 +66,20 @@ export function getState(slug: string): StateInfo | undefined {
 }
 
 function stateFactor(occ: Occupation, state: StateInfo): number {
-  return state.occupationFactors[occ.slug] ?? state.salaryFactor;
+  return (
+    state.occupationFactors?.[occ.slug] ??
+    state.salaryFactor * (state.categoryFactors?.[occ.category] ?? 1)
+  );
 }
 
-/** State-adjusted percentile wages, rounded to the nearest $10. */
+/**
+ * State percentile wages. Exact BLS values (written by scripts/fetch-bls.mjs)
+ * win when present; otherwise the factor model estimates them from the
+ * national distribution, rounded to the nearest $10.
+ */
 export function getSalary(occ: Occupation, state: StateInfo): Percentiles {
+  const exact = state.stateWages?.[occ.slug];
+  if (exact) return exact;
   const f = stateFactor(occ, state);
   const adj = (v: number) => Math.round((v * f) / 10) * 10;
   return {
@@ -73,6 +89,11 @@ export function getSalary(occ: Occupation, state: StateInfo): Percentiles {
     p75: adj(occ.national.p75),
     p90: adj(occ.national.p90),
   };
+}
+
+/** Ratio of the state median to the national median for this occupation. */
+export function relativeToNational(occ: Occupation, state: StateInfo): number {
+  return getSalary(occ, state).median / occ.national.median;
 }
 
 export function fmtUSD(n: number): string {
@@ -89,7 +110,7 @@ export function hourly(annual: number): string {
 
 /** Signed percent difference vs national median, e.g. "+16%" / "−9%". */
 export function pctVsNational(occ: Occupation, state: StateInfo): string {
-  const pct = Math.round((stateFactor(occ, state) - 1) * 100);
+  const pct = Math.round((relativeToNational(occ, state) - 1) * 100);
   return pct >= 0 ? `+${pct}%` : `−${Math.abs(pct)}%`;
 }
 
@@ -100,9 +121,10 @@ export function colAdjustedMedian(occ: Occupation, state: StateInfo): number {
 }
 
 /**
- * Comparison states: geographic neighbors first (when present in the
- * dataset), topped up with the remaining highest-paying states so the
- * table always has 4 rows even in the sample dataset.
+ * Comparison states: real geographic neighbors first (up to 5), topped up
+ * with the highest-paying remaining states so the table always has at
+ * least 4 rows (Alaska/Hawaii list West Coast states as their comparison
+ * set since they have no land borders).
  */
 export function getComparisonStates(occ: Occupation, state: StateInfo): StateInfo[] {
   const neighbors = state.neighbors
@@ -111,7 +133,8 @@ export function getComparisonStates(occ: Occupation, state: StateInfo): StateInf
   const rest = states
     .filter((s) => s.slug !== state.slug && !neighbors.includes(s))
     .sort((a, b) => getSalary(occ, b).median - getSalary(occ, a).median);
-  return [...neighbors, ...rest].slice(0, 4);
+  const count = Math.max(4, Math.min(neighbors.length, 5));
+  return [...neighbors, ...rest].slice(0, count);
 }
 
 /** Related occupations: curated list first, then same-category fill, 3–4 total. */
@@ -160,8 +183,8 @@ export interface ContentSection {
 export function buildStateContent(occ: Occupation, state: StateInfo): ContentSection[] {
   const s = getSalary(occ, state);
   const seed = `${occ.slug}|${state.slug}`;
-  const above = stateFactor(occ, state) >= 1;
-  const pctAbs = Math.abs(Math.round((stateFactor(occ, state) - 1) * 100)) + '%';
+  const above = relativeToNational(occ, state) >= 1;
+  const pctAbs = Math.abs(Math.round((relativeToNational(occ, state) - 1) * 100)) + '%';
   const colAdj = colAdjustedMedian(occ, state);
   const colDiff = Math.round(state.costOfLivingIndex - 100);
   const cities = state.topCities;
@@ -232,8 +255,8 @@ export interface Faq {
 
 export function buildFaqs(occ: Occupation, state: StateInfo): Faq[] {
   const s = getSalary(occ, state);
-  const above = stateFactor(occ, state) >= 1;
-  const pctAbs = Math.abs(Math.round((stateFactor(occ, state) - 1) * 100)) + '%';
+  const above = relativeToNational(occ, state) >= 1;
+  const pctAbs = Math.abs(Math.round((relativeToNational(occ, state) - 1) * 100)) + '%';
 
   return [
     {
@@ -257,7 +280,7 @@ export function buildFaqs(occ: Occupation, state: StateInfo): Faq[] {
 
 export function buildMetaDescription(occ: Occupation, state: StateInfo): string {
   const s = getSalary(occ, state);
-  const above = stateFactor(occ, state) >= 1;
+  const above = relativeToNational(occ, state) >= 1;
   return `${occ.title}s in ${state.name} earn a median ${fmtUSD(s.median)}/year in ${DATA_YEAR} (${pctVsNational(occ, state)} vs. national, range ${fmtCompact(s.p10)}–${fmtCompact(s.p90)}). See ${state.abbrev} pay percentiles, cost-of-living value, top cities, taxes, and how ${above ? 'far ahead' : 'close'} nearby states pay.`;
 }
 
@@ -316,7 +339,7 @@ export function buildBreadcrumbJsonLd(occ: Occupation, state: StateInfo, siteUrl
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl + '/' },
       { '@type': 'ListItem', position: 2, name: 'Jobs', item: siteUrl + '/jobs/' },
-      { '@type': 'ListItem', position: 3, name: occ.title, item: siteUrl + salaryPath(occ.slug, states[0]!.slug) },
+      { '@type': 'ListItem', position: 3, name: occ.title, item: `${siteUrl}/salary/${occ.slug}/` },
       { '@type': 'ListItem', position: 4, name: `${occ.title} in ${state.name}`, item: siteUrl + salaryPath(occ.slug, state.slug) },
     ],
   };

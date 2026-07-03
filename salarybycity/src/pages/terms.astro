@@ -1,0 +1,77 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { DATA_YEAR } from '../lib/salary';
+---
+
+<BaseLayout
+  title="Terms of Use"
+  description="Terms of use for SalaryByCity: informational-purpose data, no warranties, acceptable use, intellectual property, and liability limits — in plain English."
+>
+  <article class="mx-auto max-w-3xl py-10">
+    <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">Terms of Use</h1>
+    <p class="mt-3 text-stone-500 dark:text-stone-400">Effective date: January 1, {DATA_YEAR}</p>
+
+    <p class="mt-6 leading-relaxed text-stone-700 dark:text-stone-300">
+      Welcome to SalaryByCity. By accessing or using this website, you agree to these terms. We've
+      written them in plain English because terms nobody can read protect nobody. If you do not
+      agree with them, please do not use the site.
+    </p>
+
+    <h2 class="mt-10 text-2xl font-bold tracking-tight">1. What this site is — and isn't</h2>
+    <p class="mt-4 leading-relaxed text-stone-700 dark:text-stone-300">
+      SalaryByCity publishes salary statistics and related context (cost of living, taxes,
+      employment patterns) <strong>for general informational purposes only</strong>. Our figures are
+      statistical estimates derived from public government data as described on our
+      <a href="/methodology/" class="text-blue-700 underline dark:text-blue-400">methodology page</a>.
+      They are not an offer of employment, a promise of pay, or financial, legal, tax, or career
+      advice. Salary decisions — accepting an offer, negotiating, relocating — should account for
+      your individual circumstances, and where the stakes are high, a qualified professional.
+    </p>
+
+    <h2 class="mt-10 text-2xl font-bold tracking-tight">2. Accuracy and availability</h2>
+    <p class="mt-4 leading-relaxed text-stone-700 dark:text-stone-300">
+      We work hard to keep the data current and correct, and we document our update schedule
+      publicly. Even so, the site is provided <strong>"as is" and "as available," without warranties
+      of any kind</strong>, express or implied — including accuracy, completeness, merchantability,
+      or fitness for a particular purpose. Government source data is revised, suppressed, and
+      re-benchmarked over time; labor markets move between our updates. We may modify, suspend, or
+      discontinue any part of the site at any time without notice.
+    </p>
+
+    <h2 class="mt-10 text-2xl font-bold tracking-tight">3. Acceptable use and intellectual property</h2>
+    <p class="mt-4 leading-relaxed text-stone-700 dark:text-stone-300">
+      You may use, quote, and share our pages for personal, educational, journalistic, and internal
+      business purposes, with attribution and (online) a link back. You may not scrape or
+      republish the site wholesale, misrepresent our estimates as official BLS publications, use the
+      site to build a competing dataset by systematic extraction, or attempt to disrupt its
+      operation. The underlying government statistics are public domain; our original text,
+      calculations, design, and code are ours, and all rights not expressly granted are reserved.
+    </p>
+
+    <h2 class="mt-10 text-2xl font-bold tracking-tight">4. Third-party links and advertising</h2>
+    <p class="mt-4 leading-relaxed text-stone-700 dark:text-stone-300">
+      Pages link to external resources (such as bls.gov) and display third-party advertising. We do
+      not control and are not responsible for external sites or advertised products. The presence of
+      an advertisement is not an endorsement. Our <a href="/privacy/" class="text-blue-700 underline dark:text-blue-400">Privacy Policy</a>
+      explains how advertising cookies work here.
+    </p>
+
+    <h2 class="mt-10 text-2xl font-bold tracking-tight">5. Limitation of liability</h2>
+    <p class="mt-4 leading-relaxed text-stone-700 dark:text-stone-300">
+      To the maximum extent permitted by law, SalaryByCity and its operators will not be liable for
+      any indirect, incidental, consequential, or special damages — including lost profits, lost
+      opportunities, or employment decisions — arising from your use of, or inability to use, this
+      site or its data. Your sole and exclusive remedy for dissatisfaction with the site is to stop
+      using it.
+    </p>
+
+    <h2 class="mt-10 text-2xl font-bold tracking-tight">6. Changes and contact</h2>
+    <p class="mt-4 leading-relaxed text-stone-700 dark:text-stone-300">
+      We may update these terms from time to time; the effective date above always reflects the
+      current version, and continued use after a change constitutes acceptance. Questions about
+      these terms are welcome at
+      <a href="mailto:legal@salarybycity.com" class="text-blue-700 underline dark:text-blue-400">legal@salarybycity.com</a>
+      or via our <a href="/contact/" class="text-blue-700 underline dark:text-blue-400">contact page</a>.
+    </p>
+  </article>
+</BaseLayout>
