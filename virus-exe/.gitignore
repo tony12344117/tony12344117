@@ -1,0 +1,4 @@
+# Godot 4 캐시/임포트 산출물
+.godot/
+*.translation
+export_presets.cfg
