@@ -1,6 +1,6 @@
 ## virus.exe — 게임 전체 컨트롤러.
 ## 가짜 바탕화면 UI를 코드로 전부 생성하고(아트 에셋 0개),
-## 백신 상태 머신 / 드래그 은신 / 라운드 진행을 묶는다.
+## 백신 상태 머신 / 드래그 은신 / 라운드 진행 / 연출을 묶는다.
 ##
 ## 로직 자동 테스트: godot --headless --path . -- --autotest
 extends Control
@@ -29,12 +29,22 @@ var trash_icon
 
 var player_location := LOC_DESKTOP
 var trash_timer := 0.0
+var game_started := false
 var game_over := false
 var elapsed := 0.0
+
+# --- 통계 (라운드 클리어/게임오버 연출용) ---
+var stat_close_calls_total := 0
+var stat_close_round := 0
+var stat_moves_round := 0
+var stat_renames_round := 0
 
 # --- UI 참조 ---
 var desktop_frame: Panel
 var desktop_styles := {}
+var scan_line: ColorRect
+var av_title: Label
+var av_header: ColorRect
 var av_status: Label
 var av_target: Label
 var av_progress: ProgressBar
@@ -44,10 +54,28 @@ var clock_label: Label
 var toast_label: Label
 var toast_timer := 0.0
 var trash_count_label: Label
+var tutorial_layer: Control
+var roundclear_layer: Control
+var roundclear_title: Label
+var roundclear_stats: Label
+var roundclear_update: Label
+var roundclear_timer := 0.0
 var gameover_layer: Control
 var gameover_stats: Label
 var rename_layer: Control
 var rename_edit: LineEdit
+var shake_time := 0.0
+
+# --- 스캔 중 서스펜스 추적 ---
+## 이번 스캔 도중 한 순간이라도 "지금 걸리는 상태"였는가
+var _player_was_in_danger := false
+## 지금 이 순간 걸리는 상태인가 (플레이어 펄스 연출용)
+var _player_in_danger := false
+var _last_chance_shown := false
+var _scan_area := Rect2()
+
+## 한 번만 보여줄 튜토리얼 힌트 기록
+var _hints_shown := {}
 
 # --- 자동 테스트 상태 ---
 var _autotest := false
@@ -62,35 +90,61 @@ func _ready() -> void:
 	_setup_antivirus()
 	_build_trash()
 	_build_icons()
+	_build_scan_line()
 	_build_av_window()
 	_build_taskbar()
 	_build_rename_dialog()
+	_build_roundclear()
 	_build_gameover()
+	_build_tutorial()
 	_build_toast()
 	_refresh_player_visual()
 
 	_autotest = "--autotest" in OS.get_cmdline_user_args()
 	if _autotest:
+		tutorial_layer.visible = false
 		_run_autotest()
 	else:
-		av.start()
-		_toast("백신이 곧 검사를 시작합니다. 발각되지 마세요!")
+		# 게임은 튜토리얼의 [침투 시작] 버튼을 눌러야 시작된다
+		tutorial_layer.visible = true
 
 
 func _process(delta: float) -> void:
-	if not game_over and not _autotest:
+	if game_started and not game_over:
 		elapsed += delta
 		if player_location == LOC_TRASH:
 			trash_timer -= delta
 			trash_count_label.text = "%.1f" % maxf(trash_timer, 0.0)
 			if trash_timer <= 0.0:
 				_end_game("휴지통 비우기가 실행되어 함께 영구 삭제되었습니다.")
+		_update_danger_pulse()
 	if toast_timer > 0.0:
 		toast_timer -= delta
 		if toast_timer <= 0.0:
 			toast_label.visible = false
+	if roundclear_timer > 0.0:
+		roundclear_timer -= delta
+		if roundclear_timer <= 0.0:
+			roundclear_layer.visible = false
+	if shake_time > 0.0:
+		shake_time -= delta
+		position = Vector2(randf_range(-7.0, 7.0), randf_range(-5.0, 5.0))
+		if shake_time <= 0.0:
+			position = Vector2.ZERO
 	if clock_label != null:
 		clock_label.text = Time.get_time_string_from_system().substr(0, 5)
+
+
+## 스캔이 내 위치를 훑는 동안, 걸릴 상태면 플레이어가 빨갛게 고동친다
+func _update_danger_pulse() -> void:
+	var pulsing: bool = _player_in_danger \
+		and av.state == AntivirusScript.State.SCANNING \
+		and av.current_location() == player_location
+	if pulsing:
+		var s := 0.5 + 0.5 * sin(Time.get_ticks_msec() * 0.02)
+		player.modulate = Color(1.0, 1.0 - 0.55 * s, 1.0 - 0.55 * s)
+	elif player.modulate != Color.WHITE:
+		player.modulate = Color.WHITE
 
 
 # ---------------------------------------------------------------- UI 생성
@@ -179,6 +233,16 @@ func _spawn_icon(icon_name: String, pos: Vector2, opts: Dictionary = {}):
 	return icon
 
 
+func _build_scan_line() -> void:
+	scan_line = ColorRect.new()
+	scan_line.color = Color(1.0, 0.3, 0.3, 0.3)
+	scan_line.size = Vector2(SCREEN.x, 22.0)
+	scan_line.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	scan_line.z_index = 25
+	scan_line.visible = false
+	add_child(scan_line)
+
+
 func _build_av_window() -> void:
 	var panel := Panel.new()
 	panel.position = Vector2(16.0, 424.0)
@@ -192,19 +256,19 @@ func _build_av_window() -> void:
 	panel.add_theme_stylebox_override("panel", sb)
 	add_child(panel)
 
-	var header := ColorRect.new()
-	header.color = Color(0.15, 0.35, 0.6)
-	header.position = Vector2(2.0, 2.0)
-	header.size = Vector2(296.0, 26.0)
-	header.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_child(header)
+	av_header = ColorRect.new()
+	av_header.color = Color(0.15, 0.35, 0.6)
+	av_header.position = Vector2(2.0, 2.0)
+	av_header.size = Vector2(296.0, 26.0)
+	av_header.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(av_header)
 
-	var title := Label.new()
-	title.text = "V-Guard 백신 4.0"
-	title.position = Vector2(10.0, 4.0)
-	title.add_theme_font_size_override("font_size", 14)
-	title.add_theme_color_override("font_color", Color.WHITE)
-	panel.add_child(title)
+	av_title = Label.new()
+	av_title.text = "V-Guard 백신 4.0"
+	av_title.position = Vector2(10.0, 4.0)
+	av_title.add_theme_font_size_override("font_size", 14)
+	av_title.add_theme_color_override("font_color", Color.WHITE)
+	panel.add_child(av_title)
 
 	av_status = Label.new()
 	av_status.text = "시스템 검사 대기 중..."
@@ -214,7 +278,7 @@ func _build_av_window() -> void:
 	panel.add_child(av_status)
 
 	av_target = Label.new()
-	av_target.text = "다음 검사: " + LOCATION_NAMES[0]
+	av_target.text = "다음 검사: -"
 	av_target.position = Vector2(12.0, 56.0)
 	av_target.add_theme_font_size_override("font_size", 13)
 	av_target.add_theme_color_override("font_color", Color(1.0, 0.85, 0.6))
@@ -266,7 +330,7 @@ func _build_taskbar() -> void:
 	hb.add_child(round_label)
 
 	var hint := Label.new()
-	hint.text = "드래그: 이동 · 더블클릭: 이름 바꾸기 · 큰 파일 뒤 겹치기: 은신 · 휴지통: 4초 대피"
+	hint.text = "드래그: 이동 · 더블클릭: 이름 바꾸기 · 큰 파일 뒤: 은신 · 휴지통: 4초 대피"
 	hint.add_theme_font_size_override("font_size", 13)
 	hint.add_theme_color_override("font_color", Color(0.7, 0.75, 0.82))
 	hb.add_child(hint)
@@ -311,7 +375,7 @@ func _build_rename_dialog() -> void:
 	panel.add_child(rename_edit)
 
 	var hint := Label.new()
-	hint.text = "팁: 흔한 문서나 사진처럼 보이는 이름이면 검사를 속일 수 있습니다.\n(백신이 업데이트되기 전까지는...)"
+	hint.text = "팁: 흔한 문서나 사진처럼 보이는 이름이면 검사를 속일 수 있습니다.\n스캔 도중에도 바꿀 수 있습니다 — 마지막 1초의 역전!"
 	hint.position = Vector2(20.0, 96.0)
 	hint.add_theme_font_size_override("font_size", 12)
 	hint.add_theme_color_override("font_color", Color(0.6, 0.6, 0.65))
@@ -330,6 +394,51 @@ func _build_rename_dialog() -> void:
 	cancel.size = Vector2(80.0, 34.0)
 	cancel.pressed.connect(func() -> void: rename_layer.visible = false)
 	panel.add_child(cancel)
+
+
+func _build_roundclear() -> void:
+	roundclear_layer = Control.new()
+	roundclear_layer.size = SCREEN
+	roundclear_layer.z_index = 40
+	roundclear_layer.visible = false
+	roundclear_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(roundclear_layer)
+
+	var panel := Panel.new()
+	panel.position = Vector2((SCREEN.x - 500.0) * 0.5, 120.0)
+	panel.size = Vector2(500.0, 130.0)
+	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.08, 0.1, 0.14, 0.92)
+	sb.set_border_width_all(2)
+	sb.border_color = Color(1.0, 0.8, 0.3)
+	sb.set_corner_radius_all(8)
+	panel.add_theme_stylebox_override("panel", sb)
+	roundclear_layer.add_child(panel)
+
+	roundclear_title = Label.new()
+	roundclear_title.position = Vector2(0.0, 12.0)
+	roundclear_title.size = Vector2(500.0, 30.0)
+	roundclear_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	roundclear_title.add_theme_font_size_override("font_size", 22)
+	roundclear_title.add_theme_color_override("font_color", Color(1.0, 0.85, 0.4))
+	panel.add_child(roundclear_title)
+
+	roundclear_stats = Label.new()
+	roundclear_stats.position = Vector2(0.0, 48.0)
+	roundclear_stats.size = Vector2(500.0, 24.0)
+	roundclear_stats.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	roundclear_stats.add_theme_font_size_override("font_size", 14)
+	panel.add_child(roundclear_stats)
+
+	roundclear_update = Label.new()
+	roundclear_update.position = Vector2(0.0, 84.0)
+	roundclear_update.size = Vector2(500.0, 36.0)
+	roundclear_update.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	roundclear_update.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	roundclear_update.add_theme_font_size_override("font_size", 13)
+	roundclear_update.add_theme_color_override("font_color", Color(1.0, 0.55, 0.4))
+	panel.add_child(roundclear_update)
 
 
 func _build_gameover() -> void:
@@ -366,7 +475,7 @@ func _build_gameover() -> void:
 	panel.add_child(gameover_stats)
 
 	var tip := Label.new()
-	tip.text = "팁: 검사 시작 전에 폴더를 비우세요. 휴지통은 4초까지만!"
+	tip.text = "팁: 스캔 도중에도 이름 변경과 엄폐가 가능합니다. 마지막 1초를 노리세요!"
 	tip.position = Vector2(0.0, 200.0)
 	tip.size = Vector2(520.0, 24.0)
 	tip.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -380,6 +489,63 @@ func _build_gameover() -> void:
 	retry.size = Vector2(160.0, 40.0)
 	retry.pressed.connect(func() -> void: get_tree().reload_current_scene())
 	panel.add_child(retry)
+
+
+func _build_tutorial() -> void:
+	tutorial_layer = Control.new()
+	tutorial_layer.size = SCREEN
+	tutorial_layer.z_index = 85
+	tutorial_layer.visible = false
+	add_child(tutorial_layer)
+
+	var dim := ColorRect.new()
+	dim.color = Color(0.0, 0.0, 0.0, 0.6)
+	dim.size = SCREEN
+	tutorial_layer.add_child(dim)
+
+	var panel := Panel.new()
+	panel.position = Vector2((SCREEN.x - 560.0) * 0.5, 140.0)
+	panel.size = Vector2(560.0, 400.0)
+	tutorial_layer.add_child(panel)
+
+	var title := Label.new()
+	title.text = "virus.exe"
+	title.position = Vector2(0.0, 24.0)
+	title.size = Vector2(560.0, 40.0)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 30)
+	title.add_theme_color_override("font_color", Color(1.0, 0.35, 0.3))
+	panel.add_child(title)
+
+	var subtitle := Label.new()
+	subtitle.text = "당신은 바이러스입니다. 백신에게 들키지 마세요."
+	subtitle.position = Vector2(0.0, 68.0)
+	subtitle.size = Vector2(560.0, 26.0)
+	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	subtitle.add_theme_font_size_override("font_size", 15)
+	subtitle.add_theme_color_override("font_color", Color(0.85, 0.88, 0.95))
+	panel.add_child(subtitle)
+
+	var body := Label.new()
+	body.text = "1. 드래그 — 파일을 옮겨 검사를 피합니다.\n" \
+		+ "2. 더블클릭 — 이름을 바꿔 평범한 파일로 위장합니다.\n" \
+		+ "3. 큰 파일 뒤에 겹치거나, 휴지통(4초 한정)에 숨을 수 있습니다.\n\n" \
+		+ "노란 테두리 = 다음 검사 위치. 미리 도망치세요.\n" \
+		+ "빨간 테두리 = 검사 중. 파일이 잠기지만, 이름 변경과\n" \
+		+ "엄폐는 스캔이 끝나기 전까지 가능합니다. 역전을 노리세요!\n\n" \
+		+ "라운드를 버틸 때마다 백신이 업데이트되어 수법이 하나씩 막힙니다.\n" \
+		+ "몇 라운드까지 살아남을 수 있습니까?"
+	body.position = Vector2(48.0, 110.0)
+	body.size = Vector2(470.0, 220.0)
+	body.add_theme_font_size_override("font_size", 14)
+	panel.add_child(body)
+
+	var start := Button.new()
+	start.text = "침투 시작"
+	start.position = Vector2((560.0 - 180.0) * 0.5, 340.0)
+	start.size = Vector2(180.0, 42.0)
+	start.pressed.connect(_on_tutorial_start)
+	panel.add_child(start)
 
 
 func _build_toast() -> void:
@@ -408,6 +574,7 @@ func _setup_antivirus() -> void:
 	av.scan_progress.connect(_on_scan_progress)
 	av.location_passed.connect(_on_location_passed)
 	av.player_detected.connect(_on_player_detected)
+	av.next_target.connect(_on_next_target)
 	av.round_completed.connect(_on_round_completed)
 	av.upgraded.connect(_on_upgraded)
 
@@ -416,6 +583,11 @@ func _setup_antivirus() -> void:
 func _check_player_caught(loc: int) -> bool:
 	if game_over:
 		return false
+	return _player_would_be_caught(loc)
+
+
+## "지금 이 순간 loc에서 스캔이 끝나면 걸리는가" — 의심 연출에도 재사용
+func _player_would_be_caught(loc: int) -> bool:
 	if player_location != loc:
 		return false
 	if player.is_disguised() and not av.rename_patched:
@@ -436,50 +608,122 @@ func _is_covered() -> bool:
 	return false
 
 
+func _area_rect(loc: int) -> Rect2:
+	if loc == LOC_DESKTOP:
+		return Rect2(0.0, 0.0, SCREEN.x, SCREEN.y - TASKBAR_H)
+	return windows[loc].get_global_rect()
+
+
 func _on_scan_preparing(i: int) -> void:
 	_clear_highlights()
 	_set_highlight(i, FolderWindowScript.Highlight.PREPARING)
 	av_status.text = "검사 준비 중..."
-	av_target.text = "대상: " + LOCATION_NAMES[i]
 	av_progress.value = 0.0
 	if player_location == i:
 		_toast("경고: %s 검사가 곧 시작됩니다!" % LOCATION_NAMES[i])
+		if av.round_number == 1:
+			_hint("move", "지금이에요! 드래그해서 다른 곳으로!", true)
+	elif av.round_number == 1:
+		_hint("prepare", "노란 테두리 = 다음 검사 위치입니다. 미리 피하세요.")
 
 
 func _on_scan_started(i: int) -> void:
 	_set_highlight(i, FolderWindowScript.Highlight.SCANNING)
 	av_status.text = "검사 중: " + LOCATION_NAMES[i]
+	_player_was_in_danger = false
+	_player_in_danger = false
+	_last_chance_shown = false
+	_scan_area = _area_rect(i)
+	scan_line.position = _scan_area.position
+	scan_line.size = Vector2(_scan_area.size.x, 22.0)
+	scan_line.visible = true
 	if player_location == i:
 		player.locked = true
-		_toast("%s 검사 중 — 파일이 잠겼습니다!" % LOCATION_NAMES[i])
+		_toast("%s 검사 중 — 파일이 잠겼습니다! 위장하거나 숨으세요!" % LOCATION_NAMES[i])
 
 
-func _on_scan_progress(_i: int, ratio: float) -> void:
+func _on_scan_progress(i: int, ratio: float) -> void:
 	av_progress.value = ratio * 100.0
+	scan_line.position = Vector2(
+		_scan_area.position.x,
+		_scan_area.position.y + ratio * (_scan_area.size.y - 22.0)
+	)
+	if player_location != i:
+		return
+	# 의심 단계: 걸릴 상태면 백신이 "낌새를 챈" 것을 보여주고, 역전 기회를 준다
+	_player_in_danger = _player_would_be_caught(i)
+	if _player_in_danger:
+		_player_was_in_danger = true
+		av_status.text = "의심스러운 항목 정밀 분석 중..."
+		if ratio >= 0.7 and not _last_chance_shown:
+			_last_chance_shown = true
+			_toast("마지막 기회! 이름을 바꾸거나 큰 파일 뒤로!")
+	else:
+		av_status.text = "검사 통과 중..."
 
 
 func _on_location_passed(i: int) -> void:
 	player.locked = false
+	scan_line.visible = false
 	_set_highlight(i, FolderWindowScript.Highlight.PASSED)
 	_log("[color=#8fd694]%s: 위협 없음[/color]" % LOCATION_NAMES[i])
 	av_status.text = "다음 위치로 이동 중..."
-	av_target.text = "다음 검사: " + LOCATION_NAMES[(i + 1) % LOCATION_NAMES.size()]
+	if i == player_location:
+		# 스캔 한복판에서 살아남았다 — 위기 탈출
+		stat_close_round += 1
+		stat_close_calls_total += 1
+		if _player_was_in_danger:
+			_float_text("구사일생!!", player.global_position + Vector2(20.0, -24.0), Color(1.0, 0.85, 0.3))
+			_log("[color=#ffd479]정밀 분석 결과: 정상 파일 (오탐)[/color]")
+		else:
+			_float_text("휴우… 안 들켰다", player.global_position + Vector2(10.0, -24.0), Color(0.55, 0.95, 0.6))
+	_player_in_danger = false
+	_player_was_in_danger = false
 
 
 func _on_player_detected(i: int) -> void:
+	scan_line.visible = false
 	_set_highlight(i, FolderWindowScript.Highlight.SCANNING)
 	_log("[color=#ff7b7b]위협 탐지: '%s' → 격리 실행[/color]" % player.file_name)
+	_float_text("발각!!", player.global_position + Vector2(24.0, -24.0), Color(1.0, 0.3, 0.3))
+	shake_time = 0.35
 	_end_game("백신이 '%s'에서 바이러스를 찾아냈습니다." % LOCATION_NAMES[i])
 
 
+func _on_next_target(loc: int) -> void:
+	av_target.text = "다음 검사: " + LOCATION_NAMES[loc]
+	if loc == player_location:
+		av_target.add_theme_color_override("font_color", Color(1.0, 0.35, 0.3))
+		if game_started and not game_over:
+			_toast("경고: 다음 목표는 지금 있는 곳입니다!")
+	else:
+		av_target.add_theme_color_override("font_color", Color(1.0, 0.85, 0.6))
+
+
 func _on_round_completed(r: int) -> void:
-	_log("[color=#ffd479]== 라운드 %d 전체 검사 완료 ==[/color]" % r)
 	round_label.text = "라운드 %d" % (r + 1)
-	_toast("라운드 %d 생존! 백신이 업데이트됩니다..." % r)
+	_log("[color=#ffd479]== 라운드 %d 전체 검사 완료 ==[/color]" % r)
+	if not _autotest:
+		av.hold(2.6)
+		roundclear_title.text = "라운드 %d 생존!" % r
+		roundclear_stats.text = "이번 라운드 — 이동 %d회 · 위기 탈출 %d회 · 위장 %d회" \
+			% [stat_moves_round, stat_close_round, stat_renames_round]
+		roundclear_update.text = "백신 업데이트 수신 중..."
+		roundclear_layer.visible = true
+		roundclear_timer = 3.0
+	stat_moves_round = 0
+	stat_close_round = 0
+	stat_renames_round = 0
 
 
 func _on_upgraded(msg: String) -> void:
 	_log("[color=#ff9d5c]업데이트 %s[/color]" % msg)
+	roundclear_update.text = msg
+	# 라운드가 오를수록 백신 창이 점점 붉어진다 — 적이 강해지는 게 보이도록
+	av_title.text = "V-Guard 백신 %d.0" % (av.round_number + 3)
+	av_header.color = Color(0.15, 0.35, 0.6).lerp(
+		Color(0.62, 0.08, 0.1), clampf((av.round_number - 1) * 0.18, 0.0, 1.0)
+	)
 	_refresh_player_visual()
 
 
@@ -514,14 +758,15 @@ func _location_at(point: Vector2) -> int:
 func _on_player_dropped(icon) -> void:
 	var center: Vector2 = icon.icon_rect_global().get_center()
 	var new_loc := _location_at(center)
+	var old_loc := player_location
 	# 검사 중인 위치에서는 빠져나갈 수 없다 (파일 잠김)
 	if av.state == AntivirusScript.State.SCANNING \
-			and player_location == av.current_index \
-			and new_loc != player_location:
+			and old_loc == av.current_location() \
+			and new_loc != old_loc:
 		icon.snap_back()
 		_toast("검사 중인 위치에서 파일을 옮길 수 없습니다!")
 		return
-	var was_trash := player_location == LOC_TRASH
+	var was_trash := old_loc == LOC_TRASH
 	if new_loc == LOC_TRASH:
 		icon.global_position = trash_icon.global_position + Vector2(0.0, -6.0)
 		if not was_trash:
@@ -532,7 +777,16 @@ func _on_player_dropped(icon) -> void:
 		trash_count_label.visible = false
 	player_location = new_loc
 	icon.commit_position()
-	player.locked = av.state == AntivirusScript.State.SCANNING and player_location == av.current_index
+	if new_loc != old_loc:
+		stat_moves_round += 1
+	# 검사 준비(노란 테두리) 중에 그 위치에서 빠져나왔다면 — 아슬아슬한 탈출
+	if av.state == AntivirusScript.State.PREPARING \
+			and old_loc == av.current_location() and new_loc != old_loc:
+		stat_close_round += 1
+		stat_close_calls_total += 1
+		_float_text("아슬아슬한 탈출!", player.global_position + Vector2(20.0, -24.0), Color(0.5, 0.9, 1.0))
+	player.locked = av.state == AntivirusScript.State.SCANNING \
+		and player_location == av.current_location()
 	_refresh_player_visual()
 
 
@@ -568,6 +822,7 @@ func _on_rename_confirm() -> void:
 		return
 	player.set_file_name(new_name)
 	rename_layer.visible = false
+	stat_renames_round += 1
 	_refresh_player_visual()
 	if player.is_disguised():
 		if av.rename_patched:
@@ -589,6 +844,13 @@ func _on_start_button() -> void:
 	_toast("시작 메뉴는 아직 감염시키지 못했습니다.")
 
 
+func _on_tutorial_start() -> void:
+	tutorial_layer.visible = false
+	game_started = true
+	av.start()
+	_toast("백신이 기동했습니다. 발각되지 마세요!")
+
+
 # ---------------------------------------------------------------- 진행/종료
 
 func _end_game(reason: String) -> void:
@@ -597,8 +859,11 @@ func _end_game(reason: String) -> void:
 	game_over = true
 	av.stop()
 	player.locked = true
+	scan_line.visible = false
 	trash_count_label.visible = false
-	gameover_stats.text = "%s\n\n생존 기록: 라운드 %d · %d초 버팀" % [reason, av.round_number, int(elapsed)]
+	roundclear_layer.visible = false
+	gameover_stats.text = "%s\n\n생존 기록: 라운드 %d · %d초 · 위기 탈출 %d회" \
+		% [reason, av.round_number, int(elapsed), stat_close_calls_total]
 	gameover_layer.visible = true
 
 
@@ -606,6 +871,35 @@ func _toast(msg: String) -> void:
 	toast_label.text = msg
 	toast_label.visible = true
 	toast_timer = 2.4
+
+
+## 튜토리얼 힌트: key당 한 번만 표시
+func _hint(key: String, msg: String, at_player := false) -> void:
+	if _hints_shown.has(key):
+		return
+	_hints_shown[key] = true
+	if at_player:
+		_float_text(msg, player.global_position + Vector2(60.0, -16.0), Color(1.0, 0.95, 0.5))
+	else:
+		_toast(msg)
+
+
+## 위로 떠오르며 사라지는 텍스트 (위기 탈출/발각 피드백)
+func _float_text(text: String, pos: Vector2, color: Color) -> void:
+	var label := Label.new()
+	label.text = text
+	label.position = pos
+	label.z_index = 70
+	label.add_theme_font_size_override("font_size", 21)
+	label.add_theme_color_override("font_color", color)
+	label.add_theme_color_override("font_outline_color", Color.BLACK)
+	label.add_theme_constant_override("outline_size", 8)
+	add_child(label)
+	var tween := create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(label, "position:y", pos.y - 48.0, 1.2)
+	tween.tween_property(label, "modulate:a", 0.0, 0.7).set_delay(0.5)
+	tween.chain().tween_callback(label.queue_free)
 
 
 func _log(text: String) -> void:
@@ -659,12 +953,17 @@ func _run_autotest() -> void:
 	ok = await _wait_until(func() -> bool: return _t_detected, 5.0)
 	_check(ok, "T5: 휴리스틱 업데이트 후에는 겹침 은신도 발각된다")
 
-	# T6: 라운드 완료 시 업데이트 순서 (2라운드=이름, 3라운드=겹침)
+	# T6: 라운드 업데이트 진행 순서
 	_reset_for_test()
 	av._complete_round()
 	_check(av.rename_patched and not av.cover_patched, "T6a: 라운드 1 종료 -> 파일명 위장 무효화")
+	var order_copy = av.scan_order.duplicate()
+	order_copy.sort()
+	_check(order_copy == range(av.location_count), "T6b: 라운드 2 검사 순서는 전체 위치의 순열이다")
 	av._complete_round()
-	_check(av.cover_patched, "T6b: 라운드 2 종료 -> 겹침 은신 무효화")
+	_check(av.cover_patched and not av.rescan_enabled, "T6c: 라운드 2 종료 -> 겹침 은신 무효화")
+	av._complete_round()
+	_check(av.rescan_enabled, "T6d: 라운드 3 종료 -> 불시 재검사 활성화")
 
 	print("[autotest] 완료 — 실패 %d건" % _t_fails)
 	print("AUTOTEST %s" % ("PASS" if _t_fails == 0 else "FAIL"))
@@ -689,6 +988,8 @@ func _reset_for_test() -> void:
 	player.set_file_name("virus.exe")
 	player.global_position = Vector2(150.0, 40.0)
 	player_location = LOC_DESKTOP
+	_player_in_danger = false
+	_player_was_in_danger = false
 
 
 func _wait_until(pred: Callable, timeout: float) -> bool:

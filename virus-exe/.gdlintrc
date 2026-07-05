@@ -1,0 +1,4 @@
+# gdlint 설정
+# main.gd는 프로토타입 단계에서 UI 빌드 + 게임 규칙 + 자동 테스트를 한 파일에 담는다.
+# (정식 개발 전환 시 ui_builder / game_rules / tests 로 분리 예정)
+max-file-lines: 1200
